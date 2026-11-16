@@ -2,7 +2,25 @@
 
 This records trained experiments beyond the portable notebook options. The custom checkpoint and exporter are **not yet packaged as a supported model variant**. The standard WATERec R/RS workflows remain the reproducible public interface. No Nano/Small/Medium family with equivalent accuracy has been established.
 
-## Trained image-only token selection
+## Latest qualified point: restart2
+
+The latest fixed terminal keeps the same **17, 913, 953-parameter** architecture: aspect-preserved R 2048 input (typically 128×256), selection of 512 patches after six encoder blocks, six remaining blocks and two AR decoder layers. Both new engines were rebuilt; the old decoder was not reused.
+
+| Latest research model | Raw exact /206 | Numeric /206 | AI-reviewed numeric /144 | Mean normalized Levenshtein similarity | RGB / encoded mean ms | GPU / current host MiB |
+|---|---:|---:|---:|---:|---:|---:|
+| Token selection restart 2, TensorRT greedy AR |161 (78.16%)|187 (90.78%)|132 (91.67%)|90.18%|1.362 /1.620|708 GPU; 581.1 RGB /549.7 encoded host|
+
+Raw exact also checks currency, punctuation and spacing. **These metrics are different:** raw exact is 78.16%; 90.78% is numeric equivalence of the full price value, including its decimal fraction, and 90.18% is mean normalized Levenshtein similarity (CER 13.61%). AI 144 is an uncertified AI-assisted subset of 206, not human ground truth or internal DEV 144. Florence remains one AI-reviewed numeric case higher (133/144), so this is not noninferior on every accuracy metric.
+
+After the original full 820-image head stage (one epoch / 26 updates) and joint stage (four epochs / 208 updates), restart 2 used a fresh three-group AdamW optimizer for two prospectively fixed epochs / 104 updates / 1, 640 exposures. All 820 images were TRAIN; no checkpoint was selected using the new 206 outputs. The 206 cohort had already been observed in research, so this is post-development evidence, not a blind test. Training remains image + expected text only.
+
+Compared with the original custom terminal, 16 raw strings change: six raw gains and four losses, three numeric gains and two losses, and two AI-reference gains and two losses. This is **not a lossless model update**. Runtime output parity is instead exact against the new terminal's own native output: 206 replay strings and 1, 236 timed strings. The old intermediate 0.05 numeric failures remain failures. A separate through-EOS output-fidelity policy checks exact tokens/strings, sufficient 2E&lt; argmax-margin, pixels, masks, finite values and legal selection from the same GPU scores; it does not claim numerical, routing or calibration equivalence.
+
+The fast path caches geometry uploads and retains the queued validator. Fault flags 1/2/4 must be rejected before text returns; standalone encode consumers must explicitly call `validate_encoded`. Five warmups and three complete 206-image passes per fresh RGB/encoded process produced the table's RTX 5090 static batch 1 results. Sampled GPU memory includes CUDA context. Current host RSS includes libraries/metadata and the RGB cache where applicable; OS high-water accounting is separate, not minimum RAM. No edge, batch or rotation qualification is inherited. Weights and this custom model option remain unbundled and not selectable in notebooks.
+
+Hashes and exact values are appended as `latest_restart 2` in [the aggregate JSON](../results/compact_research.json); the original top-level record and older results below remain historical.
+
+## Earlier trained image-only token selection
 
 The custom price reader has **17,913,953 parameters**. A recovered rank-128 WATERec encoder processes the full aspect-preserved image for six blocks. A learned 50,177-parameter scorer retains 512 patches in raster order, with their original two-dimensional coordinates, for the remaining six blocks and two-layer autoregressive decoder. Typical input is 128×256 with a 2,048-patch budget; smaller valid grids are padded and masked. It is not a detector-and-crop pipeline.
 

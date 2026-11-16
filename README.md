@@ -33,7 +33,7 @@ The price model achieved **132/144 on the clear AI-reviewed numeric subset**, ve
 | Alternate resolution profiles | 1,024-patch plates or 512-patch prices; validate separately | `configs/waterec_alpr_1024.yaml`, `configs/waterec_price_512.yaml` |
 | Experimental speculative decoding | Extra 1,386,624-parameter draft bound to its OCR checkpoint; optional, plate/512 only | Notebook 8 |
 
-R and RS are different pretrained checkpoints of the **same** 12-layer 384-wide encoder and two-layer autoregressive decoder. Changing resolution changes computation, not parameter count. There is no validated official “WATERec Fast Tiny” variant here: **Fast Tiny belongs to PARSeq**, documented in its separate repository. A trained 17.9M custom token-selection reader has now preserved the recovered price reader's raw accuracy, but it has not met every Florence accuracy/runtime target and is not yet a portable release variant. See the [compact research update](docs/compact_research.md) for measured results and explicit limits.
+R and RS are different pretrained checkpoints of the **same** 12-layer 384-wide encoder and two-layer autoregressive decoder. Changing resolution changes computation, not parameter count. There is no validated official “WATERec Fast Tiny” variant here: **Fast Tiny belongs to PARSeq**, documented in its separate repository. The latest 17.9M custom research terminal reaches 161/206 raw (78.16%), 187 numeric and 132/144 AI-reviewed numeric at 1.362 ms RGB /708 MiB. It remains one AI-reviewed numeric case below Florence and is not a portable/selectable release variant; 90.78% numeric is not 90% raw exact. See the [compact research update](docs/compact_research.md) for measured results and explicit limits.
 
 ## Run like the Florence repository
 

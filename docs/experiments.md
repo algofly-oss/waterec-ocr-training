@@ -74,3 +74,7 @@ GPU memory is a sampled per-process NVML peak. A model's weight file size is not
 Use the numbered notebooks to exercise data, training, native inference, export, engine building and evaluation with fictional examples. Replace them with a separate licensed dataset for scientific replication. Cite the repository revision and upstream WATERec source; retain the dataset denominator, profile, precision and timing boundary when quoting a result.
 
 Related experiment repositories: [Florence-2](https://github.com/algofly-oss/vllm-ocr-training), [PARSeq](https://github.com/algofly-oss/parseq-ocr-training), [CCT-S](https://github.com/algofly-oss/license-plate-ocr-training).
+
+## Latest custom price operating point
+
+The fixed restart 2 research terminal reaches 161/206 raw (78.16%), 187/206 numeric (90.78%) and 132/144 AI-reviewed numeric, with 90.18% mean normalized Levenshtein similarity. Its newly qualified TensorRT path measures 1.362 ms RGB /1.620 ms encoded at 708 MiB on RTX 5090/static batch 1. This is a different checkpoint, not a lossless runtime update: 16 strings changed, including four formerly raw-correct cases lost. The older rows remain historical; see [the full scope and provenance](compact_research.md#latest-qualified-point-restart 2). It is not a selectable R/RS model option, does not reach 90% raw exact, and remains one AI-reviewed numeric case below Florence.

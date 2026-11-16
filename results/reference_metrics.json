@@ -377,5 +377,18 @@
     "TensorRT_batch": 1,
     "optional_orientation_and_speculative": "plate profile and 512 tokens only",
     "predecessor_CLI_limit_note": "Any original limited-budget note describes the earlier combined repository; use the standalone config validator for the current contract."
+  },
+  "latest_custom_research": {
+    "source": "compact_research.json#latest_restart2",
+    "parameters": 17913953,
+    "raw206": 161,
+    "numeric206": 187,
+    "AI_numeric144": 132,
+    "macro_Levenshtein_similarity": 0.9017953459701035,
+    "RGB_mean_ms": 1.3623276974110032,
+    "encoded_mean_ms": 1.6204752669902913,
+    "GPU_MiB": 708,
+    "supported_model_option": false,
+    "scope": "Latest qualified research terminal; standard R/RS options unchanged. Original historical references retained."
   }
 }

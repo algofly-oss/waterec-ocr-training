@@ -110,5 +110,139 @@
       "ru_maxrss possibly inherited, current VmRSS reported separately.",
       "No edge, dynamic batch or rotation qualification."
     ]
+  },
+  "latest_restart2": {
+    "status": "qualified_research_not_selectable_or_packaged_weights",
+    "checkpoint_sha256": "1f803005cffaee87361474981326546ffb8677bdecb8b39ce29d778ac493dc0d",
+    "state_sha256": "16d6d6b92003e6ef150192767f93535570d8f08e9b4f733fd99b06134d354065",
+    "parameters": 17913953,
+    "input": {
+      "token_budget": 2048,
+      "typical_height": 128,
+      "typical_width": 256,
+      "topK_after_encoder_blocks": 6,
+      "selected_memory_tokens": 512,
+      "decoder_AR_layers": 2,
+      "batch_size": 1,
+      "aspect_preserving": true
+    },
+    "training": {
+      "image_expected_text_only": true,
+      "FIT_images": 820,
+      "original_head_epochs": 1,
+      "original_head_updates": 26,
+      "original_joint_epochs": 4,
+      "original_joint_updates": 208,
+      "restart_epochs": 2,
+      "restart_updates": 104,
+      "restart_exposures": 1640,
+      "restart_optimizer": "Fresh AdamW with three groups; no optimizer-state continuation",
+      "primary": "Fixed terminal before new206 predictions; original206 previously observed, post-development not blind",
+      "former_DEV144": "Included in820TRAIN; not an independentDEV result"
+    },
+    "metrics": {
+      "count": 206,
+      "correct": 161,
+      "exact": 0.7815533980582524,
+      "CER": 0.1361079865016873,
+      "macro_normalized_similarity": 0.9017953459701035,
+      "numeric_correct": 187,
+      "AI_reviewed_count": 144,
+      "AI_reviewed_numeric_correct": 132,
+      "raw_exact_percent": 78.15533980582525,
+      "numeric_percent": 90.77669902912622,
+      "AI_reviewed_numeric_percent": 91.66666666666667,
+      "AI_reviewed_scope": "Uncertified AI-assisted144subset of206, not humanGT or internalDEV144"
+    },
+    "runtime": {
+      "backend": "TensorRT mixedprecision/FP16allowed/FP32normalization-softmax preference; greedyAR",
+      "GPU": "RTX5090",
+      "RGB_mean_ms": 1.3623276974110032,
+      "encoded_mean_ms": 1.6204752669902913,
+      "RGB_median_ms": 1.398022,
+      "RGB_p95_ms": 1.4703169999999999,
+      "encoded_median_ms": 1.632659,
+      "encoded_p95_ms": 1.86454765,
+      "GPU_peak_MiB": 708,
+      "current_host_RGB_MiB": 581.08984375,
+      "current_host_encoded_MiB": 549.6796875,
+      "host_scope": "Current processRSS includes libraries/metadata and RGB cache where applicable; OSru_maxrss separate/not minimumRAM",
+      "warmup_calls": 5,
+      "passes": 3,
+      "images_per_pass": 206,
+      "static_B": 1,
+      "preprocessing": "ExactGPUbicubic/normalization/pack; CPU filedecode additionally in encoded scope",
+      "guard": "Geometrycache plus deferred validator retained; flag checked after existing decoder sync before text return. Standalone encode requires validate_encoded; faultflags1/2/4 rejected.",
+      "combined_engine_disk_bytes_not_VRAM": 39591024
+    },
+    "qualification": {
+      "raw206_native_TRT_equal": 206,
+      "timed_raw_native_TRT_equal": 1236,
+      "FIT_cases": 13,
+      "FIT_unique": 12,
+      "throughEOS_policy": "Ownnative exacttokens/strings + sufficient2E<argmaxmargin on visited prefixes, exactpixels/masks/legal stableTopK fromsameGPU scores/finite",
+      "original_numeric_0_05_gate": "Prior failure preserved; no numeric/cache/routing/calibration equivalence claimed",
+      "new_encoder_and_decoder": true,
+      "all38decoder_learned_tensors_changed": true,
+      "no_206_precision_tuning": true
+    },
+    "changes_vs_original": {
+      "raw_strings_identical": 190,
+      "raw_strings_changed": 16,
+      "criteria": {
+        "raw": {
+          "count": 206,
+          "both_correct": 155,
+          "gained": 6,
+          "lost": 4,
+          "both_incorrect": 41,
+          "correctness_unchanged": 196,
+          "net_gain": 2,
+          "preserves_every_old_correct_case": false
+        },
+        "numeric": {
+          "count": 206,
+          "both_correct": 184,
+          "gained": 3,
+          "lost": 2,
+          "both_incorrect": 17,
+          "correctness_unchanged": 201,
+          "net_gain": 1,
+          "preserves_every_old_correct_case": false
+        },
+        "AI_reviewed_numeric": {
+          "count": 144,
+          "both_correct": 130,
+          "gained": 2,
+          "lost": 2,
+          "both_incorrect": 10,
+          "correctness_unchanged": 140,
+          "net_gain": 0,
+          "preserves_every_old_correct_case": false
+        }
+      }
+    },
+    "Florence_comparison": {
+      "raw": 148,
+      "numeric": 176,
+      "AI_reviewed_numeric144": 133,
+      "AI_gap": -1,
+      "all_metrics_noninferior": false
+    },
+    "limitations": [
+      "No edge hardware, dynamic batch or rotation qualification for this checkpoint.",
+      "Not a supported R/RS notebook model option; weights/engines not bundled.",
+      "90.78% numeric equivalence and90.18% character similarity are not90% raw exact accuracy.",
+      "Different model terminal;16rawstrings change, six raw gains and four losses. Not lossless.",
+      "Single sequential runtime experiment, no clock-controlled causal or significance claim."
+    ],
+    "evidence_sha256": {
+      "native_protocol": "4baf85b4e5b171e83daf3eff4cc9b2faae7122f4f0acbc9e79811955e84022f7",
+      "native_artifact_audit": "3dcd01c4941b3fbc835efec3f0d2293b2bceecf5ed93b65e1a838280c552bfe1",
+      "runtime_protocol": "f55a2a941ff3f4c23a6a6b1c8595140837ff1dadda6f989ab4e36657a8afcf4e",
+      "runtime_artifact_audit": "d355c50b88b249f0de6d2cb7f49df5c123185f7f71b11f3f4d19b2c674ea678f",
+      "build_artifact_audit": "9ee1a669fad33aed02c9a35a70ab62545ea872722765291e6e679d508b5627c6",
+      "paired_changes": "8c2207d5a29eee461225068a9cc723b24b4d5ca51f8b09b848a4f359fa4ce919"
+    }
   }
 }
