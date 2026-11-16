@@ -1,0 +1,24 @@
+# Starting workflow configuration; see docs/experiments.md for measured research recipes.
+dataset_root: dataset_price
+output_dir: artifacts/waterec_price_512
+pretrained_dir: weights/waterec
+task: price
+variant: R
+tokens: 512
+max_label_length: 24
+max_decode_steps: 25
+synthetic_plate_count: 0
+normalization: none
+epochs: 20
+warmup_epochs: 3
+batch_size: 4
+encoder_learning_rate: 1.0e-05
+decoder_learning_rate: 5.0e-05
+weight_decay: 0.01
+holdout_fraction: 0.15
+split_seed: 20261113
+seed: 20261114
+num_workers: 0
+precision: bf16
+device: cuda
+refit_all_training: true

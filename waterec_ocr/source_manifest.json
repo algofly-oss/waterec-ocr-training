@@ -1,0 +1,287 @@
+{
+  "scope": "StandalonecoreWATEextraction; originalrepositoryuntouched, no weights/private datasets bundled.",
+  "source_project": "parseq-ocr-training",
+  "upstream": "https://github.com/YesianRohn/OpenOCR-WATERec",
+  "upstream_code_pin": "d895bc57dade600923015267c87df2a40a3147b5",
+  "upstream_weight_pin": "678247a94c09c462811647c87f338cb2169d94c0",
+  "licenses": "Apache-2.0 vendoredmodel/helpercode; Pillowlicense retainedfornativebicubiccoefficients. See_vendor/waterec/NOTICE,LICENSE,source_pin.json and_native/waterec/PILLOW_LICENSE.",
+  "standalone_changes": [
+    "Package-relativeimports/ROOT/assets,selfcontainedsharedimage+transcriptdata/metrics/evaluation; no PARSeqtrainingdependencies.",
+    "Standardnativeandcachedprofilesacceptintegerpatchbudget>=64; CPU-pixeltests512/1024/2048. Export/build/runtime usemetadata budget. ActualnewtrainedCPU/ONNX/TRTaccuracy/resourcevalidation required; nooldmetricsinherited.",
+    "NewpureNumPy/PIL/ORTcachedONNXrecognizer; CLIbackendonnx. StandardTRTmath/policyretains originalFP16allowed/PREFERFP32norm-softmax and24postRoPEQKbarriers; no unverifiedprecisionisland claim.",
+    "Separatemax_label_length(default24)frommax_decode_steps(default25);labelsreserveoneEOSstep,reject ratherthantruncate; cachedexportrequires25steps.",
+    "Optionalorientation/speculativeprofileguardsremain512-only; no FastTiny/Nanoarchitecture invented.",
+    "SharedNumPyCPUpreprocessing preservesoriginalPILresize/FP32normalization/RoPEpacking; GPUpreprocessorreceivesmetadatabudget.",
+    "PriceSPACE embeddinginitializedtomeanoriginalprintableembeddingrows[1:-2];headtomeanoriginalprintableoutputrows[1:] (EOSexcluded,BOS/PADembeddingexcluded),matchingverifiedgenericmeanSPACEfactory. Existingrows/IDs preserved; temporaryconstructorsforkRNG soextensiondoesnotconsumecallerCPU/CUDARandomstate. CPUrow/mean/RNG/idempotencetestpasses. Thisalignmentdoesnotclaimfulltrainingrecipeidentity (batch/checkpointing/SDPA/memorydefaults can differ)."
+  ],
+  "dependencies": {
+    "core": [
+      "numpy",
+      "Pillow",
+      "PyYAML",
+      "torch"
+    ],
+    "export_ONNX": [
+      "onnx",
+      "onnxruntime"
+    ],
+    "TensorRT": [
+      "tensorrt",
+      "pycuda",
+      "cuda.bindings",
+      "systemCcompiler",
+      "systemnvcc"
+    ],
+    "optional_memory": [
+      "pynvml"
+    ],
+    "not_needed": [
+      "timm",
+      "einops",
+      "lightning",
+      "pytorch_lightning",
+      "parseq_ocr"
+    ]
+  },
+  "CLI": "waterec_ocr.waterec_cli:main",
+  "files": {
+    "evaluation.py": {
+      "sha256": "9e7ec840f4ce824134159d2892c6f315483e73084bd0c1a356ceb6227ddec97e",
+      "bytes": 1285,
+      "origin": "parseq_ocr/evaluation.py",
+      "origin_sha256": "9e7ec840f4ce824134159d2892c6f315483e73084bd0c1a356ceb6227ddec97e",
+      "unchanged_from_origin": true
+    },
+    "waterec_benchmark.py": {
+      "sha256": "06122bd5651b730d417a32cb546e53020dbc7abce01dac66f193a085277ec31b",
+      "bytes": 7219,
+      "origin": "parseq_ocr/waterec_benchmark.py",
+      "origin_sha256": "c462c4efd9da5a57148916de079cc4574c3bddc4731a3de3e6623f0cf8556e08",
+      "unchanged_from_origin": false
+    },
+    "waterec_speculative_training.py": {
+      "sha256": "052fc6b6e4cfa6df71814bb0b8f8300f1bb83c6081ea2c1b92fa801ced931724",
+      "bytes": 26196,
+      "origin": "parseq_ocr/waterec_speculative_training.py",
+      "origin_sha256": "a8b64ad86fdc354b4b1bba4cae71ed14a91593e4e5b0de26a743b2e03b2bc60b",
+      "unchanged_from_origin": false
+    },
+    "waterec_onnx.py": {
+      "sha256": "53ee2be3b295d10b242aec1773583dd85088da2ad2fc754338ccd39596357806",
+      "bytes": 2787,
+      "origin": "new standalone adapter/helper",
+      "origin_sha256": null,
+      "unchanged_from_origin": false
+    },
+    "waterec_runtime.py": {
+      "sha256": "28a5f6d1294f8b1f40005a410028d799c7445e3c2ed61840fcb8205dd5abcfa8",
+      "bytes": 16721,
+      "origin": "parseq_ocr/waterec_runtime.py",
+      "origin_sha256": "0bc91f0f7d7c882c9770c0fc55b14b9529013aaf0fd3815a44b4cc5696f834fa",
+      "unchanged_from_origin": false
+    },
+    "waterec_export.py": {
+      "sha256": "c6181f9716226b350675884f2d6f0f3391514e0960ab740be2a05feef2efc039",
+      "bytes": 22663,
+      "origin": "parseq_ocr/waterec_export.py",
+      "origin_sha256": "724180727472acd1a3e7f5db77cc18676369881f03d8a1977a2096494338a607",
+      "unchanged_from_origin": false
+    },
+    "data_io.py": {
+      "sha256": "9a5ce9319043154886404f433162afc923a96c91a2739c52db5fe2a58dd80c3c",
+      "bytes": 1481,
+      "origin": "parseq_ocr/data_io.py",
+      "origin_sha256": "9a5ce9319043154886404f433162afc923a96c91a2739c52db5fe2a58dd80c3c",
+      "unchanged_from_origin": true
+    },
+    "waterec_speculative_export.py": {
+      "sha256": "96283123f9a76cefa267cda5046e877412a2b9e0e7419da7837422160571ecef",
+      "bytes": 15421,
+      "origin": "parseq_ocr/waterec_speculative_export.py",
+      "origin_sha256": "96283123f9a76cefa267cda5046e877412a2b9e0e7419da7837422160571ecef",
+      "unchanged_from_origin": true
+    },
+    "waterec_gpu_preprocessing.py": {
+      "sha256": "fd5b5294e499d85084b092f4b9e02b57c89004a265f1dcb67629d3b12040a863",
+      "bytes": 10863,
+      "origin": "parseq_ocr/waterec_gpu_preprocessing.py",
+      "origin_sha256": "814bb4eeb0b7f608493330e99dc5cec41d1cef4e37c964533f692828d21bf6ca",
+      "unchanged_from_origin": false
+    },
+    "waterec_synthetic.py": {
+      "sha256": "66412ef14e35150997a1a56c49d58f2d0ef2ea5866c68e3f13fad9672ded6f6b",
+      "bytes": 4401,
+      "origin": "parseq_ocr/waterec_synthetic.py",
+      "origin_sha256": "66412ef14e35150997a1a56c49d58f2d0ef2ea5866c68e3f13fad9672ded6f6b",
+      "unchanged_from_origin": true
+    },
+    "__init__.py": {
+      "sha256": "f25c137ea21cc633ec3eb33afdc7fb8a8d4a2b780a31aad1b42bd1cdae5ec0de",
+      "bytes": 98,
+      "origin": "parseq_ocr/__init__.py",
+      "origin_sha256": "323efaf7bb9c704a6bf1d0b0cffcf23e0e2e5d8c4c009b78827df80b28722757",
+      "unchanged_from_origin": false
+    },
+    "metrics.py": {
+      "sha256": "fa9ca3784b00fee97fda860890458b7af19405d5fe3ab37a306ae33189df5b5e",
+      "bytes": 2293,
+      "origin": "parseq_ocr/metrics.py",
+      "origin_sha256": "fa9ca3784b00fee97fda860890458b7af19405d5fe3ab37a306ae33189df5b5e",
+      "unchanged_from_origin": true
+    },
+    "waterec_config.py": {
+      "sha256": "4991af97afe8d39c3cd8cd5574ce9c8574e24b404f587b06e183ce68e65c6b16",
+      "bytes": 2202,
+      "origin": "parseq_ocr/waterec_config.py",
+      "origin_sha256": "f1a43efd0bbb8a525fbe1bb82b1049da10d3eb995eb4ec8afc5fb549e7856afb",
+      "unchanged_from_origin": false
+    },
+    "waterec_training.py": {
+      "sha256": "aee00de71ac47a7289d990f61d36905cda76336a759b0d419d062dc0c9c265d6",
+      "bytes": 18932,
+      "origin": "parseq_ocr/waterec_training.py",
+      "origin_sha256": "2599c089796d5101a77fcb2591862dc4a71705125e7dfd37bc2eb5598307a63f",
+      "unchanged_from_origin": false
+    },
+    "waterec_workspace.py": {
+      "sha256": "c5ffbd3ccbaba0fb94d96c15499bcf73edd2abf71784feafd53f681660a84d1a",
+      "bytes": 2561,
+      "origin": "parseq_ocr/waterec_workspace.py",
+      "origin_sha256": "c5ffbd3ccbaba0fb94d96c15499bcf73edd2abf71784feafd53f681660a84d1a",
+      "unchanged_from_origin": true
+    },
+    "waterec_preprocessing.py": {
+      "sha256": "e8baff3b270d3f0e2256b20b6dd524776ca3ad023f9c14cd83d8d37c892f60a5",
+      "bytes": 1519,
+      "origin": "new standalone adapter/helper",
+      "origin_sha256": null,
+      "unchanged_from_origin": false
+    },
+    "waterec_models.py": {
+      "sha256": "222102ba31286a372224360d010139c2615f0c5e38cede791b5984010c1add5e",
+      "bytes": 11399,
+      "origin": "parseq_ocr/waterec_models.py",
+      "origin_sha256": "87444afb71ca899923e0571a076c07b1a4f821dd0e4d3a2eb92b4fa89dc8b717",
+      "unchanged_from_origin": false
+    },
+    "waterec_orientation.py": {
+      "sha256": "a435aadb9809743f21ef2a2c362d75af7931c6c53817ccbcb76807fcc4988129",
+      "bytes": 13051,
+      "origin": "parseq_ocr/waterec_orientation.py",
+      "origin_sha256": "a435aadb9809743f21ef2a2c362d75af7931c6c53817ccbcb76807fcc4988129",
+      "unchanged_from_origin": true
+    },
+    "waterec_speculative.py": {
+      "sha256": "2fceadf008de20f7448ee722684a0963fa5f8fc2483102ca6150026ad7752e92",
+      "bytes": 13513,
+      "origin": "parseq_ocr/waterec_speculative.py",
+      "origin_sha256": "2fceadf008de20f7448ee722684a0963fa5f8fc2483102ca6150026ad7752e92",
+      "unchanged_from_origin": true
+    },
+    "waterec_cli.py": {
+      "sha256": "997f6fe00105447d4aa5d96937a3cc28b4790dfefe4ae34f708bc49abede5ddc",
+      "bytes": 12933,
+      "origin": "parseq_ocr/waterec_cli.py",
+      "origin_sha256": "4934365603d21976c4e9c742f220a60e1737e05796e358d7dd999f2af0831144",
+      "unchanged_from_origin": false
+    },
+    "__main__.py": {
+      "sha256": "69b3b77bdf4cb0e61a1bddd461237703dacb424180f2b7f928c846706191241c",
+      "bytes": 69,
+      "origin": "new standalone adapter/helper",
+      "origin_sha256": null,
+      "unchanged_from_origin": false
+    },
+    "data.py": {
+      "sha256": "08581e462004391c0882365844fa336ef25287ad2a9e6ba46be9ee73543751f7",
+      "bytes": 4828,
+      "origin": "parseq_ocr/data.py",
+      "origin_sha256": "08581e462004391c0882365844fa336ef25287ad2a9e6ba46be9ee73543751f7",
+      "unchanged_from_origin": true
+    },
+    "_native/__init__.py": {
+      "sha256": "8ecae19e0f181083b24a39abcd4e9b7b5a57d48a2885f8d1e3d8348c0e48a107",
+      "bytes": 54,
+      "origin": "new standalone adapter/helper",
+      "origin_sha256": null,
+      "unchanged_from_origin": false
+    },
+    "_native/waterec/kernels.cu": {
+      "sha256": "79ef79dac520457e127ee896826a1e2a595e8cd061ad8749633dc8b20ee9e6c5",
+      "bytes": 1311,
+      "origin": "parseq_ocr/_native/waterec/kernels.cu",
+      "origin_sha256": "79ef79dac520457e127ee896826a1e2a595e8cd061ad8749633dc8b20ee9e6c5",
+      "unchanged_from_origin": true
+    },
+    "_native/waterec/coefficients_native.c": {
+      "sha256": "13f6e1583a45b2416316ca88c4a4bf7eadc0de6a68438b23fd467a98a9ae399b",
+      "bytes": 1027,
+      "origin": "parseq_ocr/_native/waterec/coefficients_native.c",
+      "origin_sha256": "13f6e1583a45b2416316ca88c4a4bf7eadc0de6a68438b23fd467a98a9ae399b",
+      "unchanged_from_origin": true
+    },
+    "_native/waterec/PILLOW_LICENSE": {
+      "sha256": "15181e7363dca9aed78b79bebebc7fde7f1814b8bd311ea3b87ae8ccadfc185b",
+      "bytes": 1457,
+      "origin": "parseq_ocr/_native/waterec/PILLOW_LICENSE",
+      "origin_sha256": "15181e7363dca9aed78b79bebebc7fde7f1814b8bd311ea3b87ae8ccadfc185b",
+      "unchanged_from_origin": true
+    },
+    "_vendor/__init__.py": {
+      "sha256": "8ecae19e0f181083b24a39abcd4e9b7b5a57d48a2885f8d1e3d8348c0e48a107",
+      "bytes": 54,
+      "origin": "new standalone adapter/helper",
+      "origin_sha256": null,
+      "unchanged_from_origin": false
+    },
+    "_vendor/waterec/encoder.py": {
+      "sha256": "358d0754947e0488ea97f26f5b3597c61b0be922c2f74b55473f1b51a5d0d625",
+      "bytes": 13045,
+      "origin": "parseq_ocr/_vendor/waterec/encoder.py",
+      "origin_sha256": "358d0754947e0488ea97f26f5b3597c61b0be922c2f74b55473f1b51a5d0d625",
+      "unchanged_from_origin": true
+    },
+    "_vendor/waterec/source_pin.json": {
+      "sha256": "5ac88c1763a364015f87475110b7dc463c6d81b1df92dc991b3457ab4b58bef1",
+      "bytes": 1760,
+      "origin": "parseq_ocr/_vendor/waterec/source_pin.json",
+      "origin_sha256": "5ac88c1763a364015f87475110b7dc463c6d81b1df92dc991b3457ab4b58bef1",
+      "unchanged_from_origin": true
+    },
+    "_vendor/waterec/NOTICE": {
+      "sha256": "b696d869c905c483dd98fc24a6d6802ee3cc2b97ad874edf9f71fd949286a7ca",
+      "bytes": 850,
+      "origin": "parseq_ocr/_vendor/waterec/NOTICE",
+      "origin_sha256": "b696d869c905c483dd98fc24a6d6802ee3cc2b97ad874edf9f71fd949286a7ca",
+      "unchanged_from_origin": true
+    },
+    "_vendor/waterec/decoder.py": {
+      "sha256": "8aa4b03a091518d91059f0e3e587b16c4636240392038af89647f9a560dcd0e3",
+      "bytes": 8758,
+      "origin": "parseq_ocr/_vendor/waterec/decoder.py",
+      "origin_sha256": "8aa4b03a091518d91059f0e3e587b16c4636240392038af89647f9a560dcd0e3",
+      "unchanged_from_origin": true
+    },
+    "_vendor/waterec/LICENSE": {
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357,
+      "origin": "parseq_ocr/_vendor/waterec/LICENSE",
+      "origin_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "unchanged_from_origin": true
+    },
+    "_vendor/waterec/__init__.py": {
+      "sha256": "e34e21f0ee94767c55eda776dc5cac8ffe81eba35b175b5e3af605b33f24247e",
+      "bytes": 61,
+      "origin": "parseq_ocr/_vendor/waterec/__init__.py",
+      "origin_sha256": "e34e21f0ee94767c55eda776dc5cac8ffe81eba35b175b5e3af605b33f24247e",
+      "unchanged_from_origin": true
+    },
+    "_vendor/waterec/characters.txt": {
+      "sha256": "f78699bea31752580f18344fd2c276171d1fd8268094b655452f703fe941e6e0",
+      "bytes": 187,
+      "origin": "parseq_ocr/_vendor/waterec/characters.txt",
+      "origin_sha256": "f78699bea31752580f18344fd2c276171d1fd8268094b655452f703fe941e6e0",
+      "unchanged_from_origin": true
+    }
+  }
+}

@@ -1,0 +1,328 @@
+{
+  "schema_version": 1,
+  "compiled_UTC_date": "2026-11-16",
+  "purpose": "Historical qualified reference metrics and verified model-option facts; not dummy-run results or guarantees for new training.",
+  "hardware": {
+    "GPU": "NVIDIA GeForce RTX 5090",
+    "VRAM_nominal_GiB": 32,
+    "timing": "Fresh isolated processes; setup/model load/first-use compilation excluded. Sampled NVML per-PID memory includes CUDA context; not weight size or host RAM.",
+    "date_note": "ALPR current runtime measured2026-11-15; priceR2048 evidence reviewed2026-11-16. Individual evidence is authoritative."
+  },
+  "model_options": {
+    "R": {
+      "parameters_native95": 26120544,
+      "meaning": "Generic R pretrained checkpoint; same architecture and parameter size as RS, different pretraining/initialization."
+    },
+    "RS": {
+      "parameters_native95": 26120544,
+      "meaning": "Generic RS pretrained checkpoint; NOT smaller or larger than R."
+    },
+    "shared_architecture": {
+      "encoder_depth": 12,
+      "encoder_width": 384,
+      "encoder_attention_heads": 6,
+      "encoder_parameters": 21313632,
+      "decoder_depth": 2,
+      "decoder_width": 384,
+      "decoder_attention_heads": 12,
+      "native_decoder_parameters": 4806912,
+      "patch_HW": [
+        4,
+        4
+      ],
+      "decoding": "Greedy cached autoregressive character decoding",
+      "default_max_decode_steps": 25
+    },
+    "price_SPACE": {
+      "predicted_classes": 96,
+      "characters": "95 printable ASCII plus EOS; BOS/PAD excluded from output",
+      "additional_parameters": 768,
+      "parameters": 26121312,
+      "decoder_parameters": 4807680,
+      "initialization": "Preserve original symbols; mean-initialize one embedding row and one head row for SPACE."
+    },
+    "plate_native": {
+      "predicted_classes": 95,
+      "characters": "94 original non-space printable symbols plus EOS; no native SPACE output",
+      "parameters": 26120544
+    },
+    "experimental_speculative_ALPR512": {
+      "enabled_by_default": false,
+      "additional_draft_parameters": 1386624,
+      "target_plus_draft_parameters": 27507168,
+      "target_unchanged": true,
+      "qualification": "Optional target-verifying decoder, not a Tiny WATE model; numerical/quality/runtime must be validated for exact target/draft/engine pair. Not part of ordinary-AR metrics below."
+    }
+  },
+  "qualified_references": {
+    "ALPR_RS512_ordinary_AR": {
+      "parameters": 26120544,
+      "native_token_budget": 512,
+      "quality": {
+        "validation": {
+          "correct": 2475,
+          "count": 2693
+        },
+        "reviewed_unseen": {
+          "correct": 880,
+          "count": 984
+        },
+        "foreign_plates": {
+          "correct": 332,
+          "count": 443
+        }
+      },
+      "static_B1": {
+        "RGB_mean_ms": 1.2557862744415615,
+        "encoded_mean_ms": 2.259585265392161,
+        "GPU_memory_MiB": 694,
+        "timing_images": 256,
+        "repeats": 1,
+        "warmups": 5,
+        "orientation": false,
+        "speculative": false
+      },
+      "timing_preprocessing": "Opt-in exact GPU preprocessing; image file decoding remains CPU when included"
+    },
+    "price_R2048": {
+      "parameters": 26121312,
+      "native_token_budget": 2048,
+      "common_crop_geometry": {
+        "original_HW": [
+          160,
+          320
+        ],
+        "resized_HW": [
+          128,
+          256
+        ],
+        "patches": 2048
+      },
+      "quality": {
+        "raw": {
+          "correct": 153,
+          "count": 206
+        },
+        "strict_numeric": {
+          "correct": 180,
+          "count": 206
+        },
+        "AI_reviewed_numeric": {
+          "correct": 132,
+          "count": 144
+        }
+      },
+      "Florence_reference_same_price_cohorts": {
+        "raw": 148,
+        "strict_numeric": 176,
+        "AI_reviewed_numeric": 133,
+        "denominators": [
+          206,
+          206,
+          144
+        ],
+        "note": "Reference comparison, not Florence code or weights shipped here."
+      },
+      "static_B1": {
+        "RGB_mean_ms": 1.6838393252427184,
+        "encoded_mean_ms": 1.9903246051779937,
+        "GPU_memory_MiB": 716,
+        "timing_images": 206,
+        "repeats": 3,
+        "warmups": 5,
+        "scope": "Full RGB-to-Unicode includes native GPU resize/normalization/packing, transfer, encoder, cached AR and text decode. Encoded additionally includes file read/JPEG decode.",
+        "actual_engine_calls": "Static batch1 each image; list input does not imply true tensor batch."
+      },
+      "timing_preprocessing": "Opt-in exact GPU preprocessing; image file decoding remains CPU when included"
+    }
+  },
+  "Fast_Tiny_optional_historical_baselines": [
+    {
+      "task": "plate",
+      "input_HW": [
+        48,
+        192
+      ],
+      "parameters": 6048863,
+      "parameter_scope": "Existing full_fit state tensors correspond to PARSeq learned parameters; separate task classifier sizes. Not WATE draft size.",
+      "quality": {
+        "correct": 203,
+        "count": 256,
+        "cohort": "256-image timing subset; NOT full2693 plate score"
+      },
+      "RGB_ms": 0.6862260218743662,
+      "encoded_ms": 1.6581764586286833,
+      "GPU_memory_MiB": 682,
+      "batch": 1,
+      "engine_profile_max_batch": 32,
+      "repeats": 3,
+      "warmups": 5,
+      "preprocessing": "OpenCV area",
+      "runtime": "Unchanged historical GraphOCR, fixed parallel query/refinement graph; optional baseline, not same architecture as WATE."
+    },
+    {
+      "task": "price",
+      "input_HW": [
+        48,
+        192
+      ],
+      "parameters": 6049248,
+      "parameter_scope": "Existing full_fit state tensors correspond to PARSeq learned parameters; separate task classifier sizes. Not WATE draft size.",
+      "quality": {
+        "correct": 112,
+        "count": 206,
+        "cohort": "206-price cohort"
+      },
+      "RGB_ms": 0.8890187154180433,
+      "encoded_ms": 1.0945887837376638,
+      "GPU_memory_MiB": 688,
+      "batch": 1,
+      "engine_profile_max_batch": 32,
+      "repeats": 3,
+      "warmups": 5,
+      "preprocessing": "Pillow bicubic",
+      "runtime": "Unchanged historical GraphOCR, fixed parallel query/refinement graph; optional baseline, not same architecture as WATE."
+    }
+  ],
+  "training_and_export_scope": {
+    "resolution": "Aspect preserving native NaRecTVResize with pixel-area budget16*max_tokens, dimensions floored to multiples4. Budget is a maximum, not exact token count; e.g1024 gives990 on160x320 source. Changing budget changes pixels/attention cost and requires actual quality/runtime qualification.",
+    "existing_source_CLI_audited": "Prior public WATE validator accepts256,384,512,1024; it does NOT currently accept arbitrary multiples16 or2048. Standalone implementation must explicitly extend/test before README claims otherwise. Native implementation itself takes configurable integer max_seq_len.",
+    "labels": "Existing validator permits max_label_length1..25; decoder runs up to25 outputs including EOS, so24chars+EOS fits guaranteed,25chars may exhaust without EOS. Reject unsupported characters/oversize labels rather than silently truncate.",
+    "batch": "PyTorch training uses variable native shapes/masks; TensorRT qualified reference defaults staticB1. Dynamic batches require separate profiles/parity/metrics; do not inherit baseline headline.",
+    "precision": "Qualified native TensorRT source uses FP16 where allowed with FP32 Q/K post-RoPE cast barriers and normalization/softmax safeguards. It is not an all-FP16 mathematical guarantee.",
+    "orientation": "Default disabled. Optional classifier/rotation correction is a distinct pipeline, not free rotation invariance. Quarterturn handling/latency must be qualified separately.",
+    "dummy_data": "Synthetic dummy notebook/test outputs demonstrate function only, never real OCR accuracy or benchmark qualification."
+  },
+  "license_provenance": {
+    "WATE": {
+      "repository": "https://github.com/YesianRohn/OpenOCR-WATERec",
+      "revision": "d895bc57dade600923015267c87df2a40a3147b5",
+      "license": "Apache-2.0",
+      "preserve": [
+        "LICENSE",
+        "NOTICE/source attribution",
+        "local modification notices"
+      ],
+      "vendored_components": [
+        "openrec/modeling/encoders/navit_rope.py",
+        "openrec/modeling/decoders/na_ar_decoder.py",
+        "tools/utils/EN_symbol_dict.txt"
+      ],
+      "observed_modifications": "CPU device portability uses tensor.device instead of CUDA-only get_device; deployment/export adapters separate.",
+      "SPDX_gap": "Inspected encoder/decoder files lack per-file SPDX headers; repository LICENSE/NOTICE supplies provenance. Do not label all dependencies as original project code."
+    },
+    "Pillow_resize_derivative": {
+      "license": "MIT-CMU",
+      "preserve": "PILLOW_LICENSE with upstream copyright notices alongside derived C/CUDA resize code"
+    },
+    "PARSeq_FastTiny_wrapper": {
+      "license_in_existing_training_repo": "Apache-2.0",
+      "note": "Optional adapter must retain upstream and vendored dependency notices; pretrained weight/data rights are separate from code license."
+    },
+    "weights_and_data": "Reference private checkpoints, engines, datasets, image IDs, and task-specific performance are not redistributed by this metadata."
+  },
+  "evidence": [
+    {
+      "case": "WATE ALPR current ordinary AR timing, 2026-11-15",
+      "artifact": "validation_summary.json",
+      "sha256": "083fb6ce2bf3815bce50df1d324909d58d02248978d15294cc1c752ce88ea0a0",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "WATE price R2048 static B1 native TensorRT qualification",
+      "artifact": "qualify206.json",
+      "sha256": "531242f01547e63886c0d77272fde1157be06e657b076f3c31ca3c20e9a26430",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "WATE price R2048 RGB timing",
+      "artifact": "benchmark_predecoded.json",
+      "sha256": "cbb0403388cf8047448e6c356be0f7db7e6b0503458481205717c14321b2cdcd",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "WATE price R2048 encoded timing",
+      "artifact": "benchmark_encoded.json",
+      "sha256": "a8d133934f36065ed23416b4ecb5fffd08f511cd09de3822652fb9695894dd34",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "Fast Tiny plate historical quality cohort",
+      "artifact": "summary.json",
+      "sha256": "7aac4ae094fa41a6ad41d372ac8a9d5b865a3a5502eb1ca5c5f40dffbd8811bf",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "Fast Tiny plate matched RGB timing",
+      "artifact": "matched_predecoded.json",
+      "sha256": "26fa068570af760473e92df582eda82989338d5fbb1ea0c4630e204ea2c508ef",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "Fast Tiny plate matched encoded timing",
+      "artifact": "matched_encoded.json",
+      "sha256": "5f05b992692f2fd50f6fd4a0cd69b51da993b97760bcd8b6962976b31c83888b",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "Fast Tiny price historical quality cohort",
+      "artifact": "summary.json",
+      "sha256": "7c9bfc62eb63b60a23d5e37b931500c40c664ccfdde03d4809c867e52ac71657",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "Fast Tiny price matched RGB timing",
+      "artifact": "matched_predecoded.json",
+      "sha256": "71a18dc08b6cfa28cd890fae33241b93e0dbb6654d92c2984367f71027a17966",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "Fast Tiny price matched encoded timing",
+      "artifact": "matched_encoded.json",
+      "sha256": "e1844ceb30cf2f756320e0600aa4d40f6ed75fc24f2638a5c24dde3070024469",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    },
+    {
+      "case": "WATE upstream source attribution",
+      "artifact": "WATERec_NOTICE",
+      "sha256": "445dbd8491ab8492bd8e34dade8c37049d3661ac04d884e8c2ab97c05c44908d",
+      "availability": "License/notice included in the vendored source distribution; see NOTICE."
+    },
+    {
+      "case": "WATE Apache2 license",
+      "artifact": "LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "availability": "License/notice included in the vendored source distribution; see NOTICE."
+    },
+    {
+      "case": "Pillow resize derivative license",
+      "artifact": "PILLOW_LICENSE",
+      "sha256": "15181e7363dca9aed78b79bebebc7fde7f1814b8bd311ea3b87ae8ccadfc185b",
+      "availability": "License/notice included in the vendored source distribution; see NOTICE."
+    },
+    {
+      "case": "Experimental draft parameter inventory",
+      "artifact": "measured_results.json",
+      "sha256": "7e65370ad272df3d0bc348637aaae162e0d773204274f49f67c8884a1ec7bf79",
+      "availability": "Private measurement evidence; datasets/checkpoints/engines not included in source distribution."
+    }
+  ],
+  "release_status": "Benchmark reference metadata. Fresh software checks are reported separately in validation_summary.json; dummy workflows do not establish these accuracy scores.",
+  "standalone_workflow": {
+    "model_variants": [
+      "R",
+      "RS"
+    ],
+    "training_token_budget": "Integer >=64; resource-dependent, new budget needs evaluation and new export",
+    "tested_geometry_budgets_CPU": [
+      512,
+      1024,
+      2048
+    ],
+    "default_max_label_characters": 24,
+    "cached_decode_steps": 25,
+    "TensorRT_batch": 1,
+    "optional_orientation_and_speculative": "plate profile and 512 tokens only",
+    "predecessor_CLI_limit_note": "Any original limited-budget note describes the earlier combined repository; use the standalone config validator for the current contract."
+  }
+}

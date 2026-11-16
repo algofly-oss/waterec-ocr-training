@@ -1,0 +1,13 @@
+Includes selected WATERec/OpenOCR-WATERec code under the Apache License 2.0.
+Upstream: https://github.com/YesianRohn/OpenOCR-WATERec
+Pinned source revision: d895bc57dade600923015267c87df2a40a3147b5
+Original license, modification notice and hashes are retained under
+waterec_ocr/_vendor/waterec/.
+
+Optional CUDA preprocessing adapts Pillow's libImaging/Resample.c coefficient
+algorithm. Pillow/PIL copyrights and MIT-CMU terms are preserved in
+waterec_ocr/_native/waterec/PILLOW_LICENSE. Compiled binaries are not distributed.
+
+Notebook workflows, experiment documentation, data utilities and deployment
+integration are maintained by AlgoFly contributors. Pretrained model weights
+are downloaded separately from the identified upstream source.

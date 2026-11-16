@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PARSeq crop labels</title><style>
+body{font:16px system-ui,sans-serif;max-width:1000px;margin:40px auto;padding:0 20px;color:#1c2b40;background:#f5f7fa}
+main{background:white;border:1px solid #dce3ec;border-radius:12px;padding:24px}img{display:block;max-width:100%;max-height:420px;margin:24px auto;image-rendering:auto}textarea{box-sizing:border-box;width:100%;font:24px monospace;padding:12px}button{font:inherit;padding:10px 18px;margin:16px 8px 0 0;cursor:pointer}#status{min-height:24px;color:#295e49}#count{color:#526479}
+</style></head><body><main><h1>Crop labels</h1><p>Label cropped plates or words. Save writes a matching UTF-8 <code>.txt</code> file.</p>
+<p id="count"></p><img id="image" alt="Current crop"><textarea id="label" aria-label="Ground-truth text" rows="2"></textarea>
+<div><button id="previous">Previous</button><button id="save">Save</button><button id="next">Save &amp; next</button><button id="skip">Skip</button></div><p id="status" role="status"></p></main>
+<script>
+let images=[], index=0;
+const el=id=>document.getElementById(id);
+function show(){
+ if(!images.length){el('count').textContent='No images yet. Add crops to annotator/static/images and refresh.';el('image').hidden=true;for(const b of document.querySelectorAll('button'))b.disabled=true;return;}
+ const row=images[index];el('image').src='/images/'+encodeURIComponent(row.name);el('label').value=row.label;el('count').textContent=`${index+1} / ${images.length} — ${row.name}`;el('status').textContent='';el('label').focus();
+}
+async function save(){
+ const response=await fetch('/api/labels/'+encodeURIComponent(images[index].name),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:el('label').value})});
+ if(!response.ok){el('status').textContent='Could not save. Enter a nonempty label and try again.';return false;}
+ const row=await response.json();images[index].label=row.label;el('status').textContent='Saved';return true;
+}
+el('save').onclick=save;el('next').onclick=async()=>{if(await save()){index=Math.min(index+1,images.length-1);show();}};
+el('previous').onclick=()=>{index=Math.max(0,index-1);show();};el('skip').onclick=()=>{index=Math.min(index+1,images.length-1);show();};
+el('label').onkeydown=event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();el('next').click();}};
+fetch('/api/images').then(r=>r.json()).then(rows=>{images=rows;show();}).catch(()=>{el('status').textContent='Could not load images. Refresh to retry.';});
+</script></body></html>

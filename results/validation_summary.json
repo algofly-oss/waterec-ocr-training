@@ -1,0 +1,36 @@
+{
+  "checked_UTC": "2026-11-16T12:36:52.100127+00:00",
+  "purpose": "Software workflow checks, not research accuracy or timing replication",
+  "CPU_core_tests_passed": 5,
+  "clean_notebooks_executed": 9,
+  "notebook_scope": "Default CPU cells executed; model/download/export/GPU opt-ins separately exercised by CLI as specified below",
+  "profiles": [
+    {
+      "profile": "alpr512",
+      "tokens": 512,
+      "scope": "One epoch decoder-warmup training on 14 fictional FIT images; 2 internal holdout images",
+      "fictional_evaluation_images": 4,
+      "native_ONNX_TensorRT_strings_equal": true,
+      "encoder_and_cached_decoder_engines_built": true,
+      "checkpoint_or_engine_distributed": false
+    },
+    {
+      "profile": "price2048",
+      "tokens": 2048,
+      "scope": "Official generic R plus mean SPACE only; no price fine-tuning in this functional check",
+      "fictional_evaluation_images": 4,
+      "native_ONNX_TensorRT_strings_equal": true,
+      "encoder_and_cached_decoder_engines_built": true,
+      "checkpoint_or_engine_distributed": false
+    }
+  ],
+  "hardware": {
+    "GPU": "NVIDIA GeForce RTX 5090",
+    "driver": "595.58.03",
+    "TensorRT": "10.15.1.29"
+  },
+  "Docker_build_executed": false,
+  "optional_orientation_speculative_GPU_tests_in_this_release": false,
+  "research_metrics": "Separate historical qualified records in reference_metrics.json; dummy results do not replace them",
+  "private_inputs_and_model_artifacts_published": false
+}

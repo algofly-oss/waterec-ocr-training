@@ -1,0 +1,41 @@
+{
+  "orientation": {
+    "scope": "Separate experimental ALPR orientation pipeline; no price claim and no native-reader invariance claim",
+    "evidence_sha256": "5326f1fde3316e000aca8b72cf8114bc44bf0c288652f89af3c7ec9d8a3158b6",
+    "clockwise_degrees": {
+      "90": {
+        "correct": 706,
+        "count": 788
+      },
+      "180": {
+        "correct": 706,
+        "count": 788
+      },
+      "270": {
+        "correct": 707,
+        "count": 788
+      }
+    },
+    "upright": {
+      "correct_with_correction": 879,
+      "correct_without_correction": 880,
+      "count": 984
+    },
+    "current_florence_rotation_comparison": null,
+    "reason": "No matched current deployment comparison qualified in this summary"
+  },
+  "fewshot_clutter": {
+    "model": "Florence",
+    "evidence_type": "user qualitative observation",
+    "approximate_support_images": 50,
+    "matched_accuracy": null
+  },
+  "two_line_subset_accuracy": null,
+  "country_stratified_accuracy": null,
+  "price_ai_reviewed": {
+    "waterec_correct": 132,
+    "florence_correct": 133,
+    "count": 144,
+    "separate_from_raw206": true
+  }
+}

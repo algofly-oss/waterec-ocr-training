@@ -1,0 +1,14 @@
+WATERec / OpenOCR-WATERec
+Source: https://github.com/YesianRohn/OpenOCR-WATERec
+Revision: d895bc57dade600923015267c87df2a40a3147b5
+Encoder: openrec/modeling/encoders/navit_rope.py
+Decoder: openrec/modeling/decoders/na_ar_decoder.py
+Dictionary: tools/utils/EN_symbol_dict.txt
+License: Apache License 2.0; LICENSE reproduced alongside.
+Local changes: remove unused Mlp import; use tensor.device instead of CUDA-only get_device() in decoder for CPU compatibility. Mathematical inference unchanged.
+Project authors: Xingsong Ye and OpenOCR contributors (Fudan FVL).
+
+Optional project preprocessing adapters live separately under
+parseq_ocr/_native/waterec and waterec_gpu_preprocessing.py. Their Pillow-derived
+coefficient algorithm retains the Pillow license there; it does not change the
+upstream model weights or the default CPU preprocessing policy.

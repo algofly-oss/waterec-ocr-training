@@ -1,0 +1,12 @@
+.git
+.venv
+.validation
+.local_archive
+__pycache__
+artifacts
+weights
+dataset
+dataset_price
+*.zip
+*.engine
+*.onnx

@@ -1,0 +1,38 @@
+{
+  "repository": "https://github.com/YesianRohn/OpenOCR-WATERec",
+  "revision": "d895bc57dade600923015267c87df2a40a3147b5",
+  "license": "Apache-2.0",
+  "files": {
+    "encoder.py": {
+      "upstream_path": "openrec/modeling/encoders/navit_rope.py",
+      "upstream_sha256": "cfa94adc61c79e6e808a8c97833091c4d177bdf16ef854533a7443d50655bea0",
+      "vendored_sha256": "358d0754947e0488ea97f26f5b3597c61b0be922c2f74b55473f1b51a5d0d625"
+    },
+    "decoder.py": {
+      "upstream_path": "openrec/modeling/decoders/na_ar_decoder.py",
+      "upstream_sha256": "3fd302de68d992749f906ca15de5123d47bf0da5771dc37bed63231d21f61d50",
+      "vendored_sha256": "8aa4b03a091518d91059f0e3e587b16c4636240392038af89647f9a560dcd0e3"
+    },
+    "characters.txt": {
+      "upstream_path": "tools/utils/EN_symbol_dict.txt",
+      "upstream_sha256": "f78699bea31752580f18344fd2c276171d1fd8268094b655452f703fe941e6e0",
+      "vendored_sha256": "f78699bea31752580f18344fd2c276171d1fd8268094b655452f703fe941e6e0"
+    },
+    "LICENSE": {
+      "upstream_path": "LICENSE",
+      "upstream_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "vendored_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  },
+  "changes": [
+    "Removed unused decoder Mlp import",
+    "Replaced CUDA-only get_device with tensor.device for CPU support",
+    "Added attribution header; normalized line endings"
+  ],
+  "official_weights": {
+    "repository": "https://huggingface.co/Yesianrohn/WATERec-Models",
+    "revision": "678247a94c09c462811647c87f338cb2169d94c0",
+    "R_sha256": "ca03d07e6b0a7eebf97ade6bbefd48a1c2deed7c13593f085d32e2196bd875d9",
+    "RS_sha256": "cdc3e33a61a08a1fb7f00cb3054cd74a9259863830869d7546ec5e2bc8714801"
+  }
+}
