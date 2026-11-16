@@ -1,0 +1,45 @@
+# Experimental starting profile. One-epoch stages are demonstrations, not an
+# accuracy recipe or reproduction of the trained reference checkpoint.
+# Paths resolve relative to THIS YAML file in the dedicated compact CLI.
+dataset_root: ../../dataset_price
+output_dir: ../../artifacts/compact_price
+pretrained_dir: ../../weights/waterec
+task: price
+variant: R
+tokens: 2048
+include_space: true
+max_label_length: 24
+max_decode_steps: 25
+normalization: none
+teacher_mode: finetune
+teacher_epochs: 1
+teacher_batch_size: 1
+# Optional: use a trusted, appropriately trained STANDARD teacher instead.
+# Set teacher_mode: provided and uncomment the matching checkpoint path.
+# teacher_checkpoint: ../../weights/your_standard_price_teacher.pt
+# Supplied-teacher data/pretraining provenance is YOUR responsibility.
+# Its task/variant/budget/SPACE/charset metadata must match this profile.
+use_validation_folder: true
+validation_fraction: 0.15
+rank: 128
+after_blocks: 6
+target_keep: 512
+recovery_epochs: 1
+scorer_epochs: 1
+joint_epochs: 1
+restart_epochs: 0
+batch_size: 1
+microbatch: 1
+teacher_microbatch: 1
+evaluation_batch_size: 1
+encoder_learning_rate: 0.00001
+decoder_learning_rate: 0.00005
+scorer_learning_rate: 0.001
+joint_scorer_learning_rate: 0.0001
+weight_decay: 0.01
+clip_norm: 5.0
+augment_contrast: false
+seed: 15001
+device: cuda
+precision: fp32
+max_gpu_memory_mib: 4096

@@ -1,0 +1,43 @@
+# Experimental software demonstration, NOT the measured benchmark recipe.
+# Paths resolve relative to THIS YAML file in the dedicated compact CLI.
+dataset_root: ../../dummy_data/prices
+output_dir: ../../artifacts/compact_dummy_price
+pretrained_dir: ../../weights/waterec
+task: price
+variant: R
+tokens: 64
+include_space: true
+max_label_length: 24
+max_decode_steps: 25
+normalization: none
+# Auto-fine-tunes official R weights on FIT only, in a separate output folder.
+# To supply your own task teacher, set teacher_mode: provided AND teacher_checkpoint.
+# teacher_checkpoint: ../../weights/your_standard_price_teacher.pt
+teacher_mode: finetune
+teacher_epochs: 1
+teacher_batch_size: 1
+validation_folder: ../../dummy_data/prices/val
+use_validation_folder: true
+validation_fraction: 0.15
+rank: 128
+after_blocks: 6
+target_keep: 512
+recovery_epochs: 1
+scorer_epochs: 1
+joint_epochs: 1
+restart_epochs: 0
+batch_size: 1
+microbatch: 1
+teacher_microbatch: 1
+evaluation_batch_size: 1
+encoder_learning_rate: 0.00001
+decoder_learning_rate: 0.00005
+scorer_learning_rate: 0.001
+joint_scorer_learning_rate: 0.0001
+weight_decay: 0.01
+clip_norm: 5.0
+augment_contrast: false
+seed: 15001
+device: cpu
+precision: fp32
+max_gpu_memory_mib: 4096

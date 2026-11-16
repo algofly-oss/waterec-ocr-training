@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "experimental_standalone_workflow_not_standard_R_RS",
+  "console": "waterec-compact",
+  "module": "waterec_ocr.waterec_compact_cli",
+  "guide": "../docs/compact_workflow.md",
+  "notebook": "../notebooks/9_experimental_compact_workflow.ipynb",
+  "reference_weights_bundled": false,
+  "one_epoch_defaults": "Software demonstration, not benchmark recipe/accuracy inheritance",
+  "teacher_provenance": "Caller responsible for supplied-teacher data/pretraining and validation/test separation",
+  "automatic_resume": false,
+  "charset": "Native printable characters with configured SPACE/EOS/BOS/PAD; unsupported labels rejected",
+  "native_resolution": "Configurable budget>=64 subject to resources",
+  "ONNX_CPU_tested_budgets": [
+    64,
+    2048
+  ],
+  "dummy64_GPU": "Functional workflow and actualCLI export/build/infer6FIT/evaluate2VAL parity only; not trained accuracy/resource qualification",
+  "TensorRT_configured_budget_cap": [
+    64,
+    2048
+  ],
+  "trained_TensorRT_qualified": {
+    "static_batch": 1,
+    "budget": 2048,
+    "keep": 512,
+    "after_blocks": 6,
+    "parameters": 17913953,
+    "checkpoint_sha256": "1f803005cffaee87361474981326546ffb8677bdecb8b39ce29d778ac493dc0d",
+    "raw_correct206": 161,
+    "numeric_correct206": 187,
+    "AI_reviewed_numeric144": 132,
+    "macro_normalized_Levenshtein_similarity": 0.9017953459701035,
+    "GPU_MiB": 708,
+    "all206plus1236raw_identical": true,
+    "audit_sha256": "15cb47eb1f479e3af386887e40d41a9b0b738dfe0421783a5c6caaef4fb228bf",
+    "scope": "RTX5090/fivewarmups/threepasses206/freshprocesses; AI references uncertified; original.05numericfailure not passed. Earlier runtime snapshots retained separately.",
+    "runtime_v3_RGB_mean_ms": 1.3560828042071198,
+    "runtime_v3_encoded_mean_ms": 1.6209847605177994,
+    "prior_runtime_v2_snapshot": {
+      "RGB_mean_ms": 1.3555699530744336,
+      "encoded_mean_ms": 1.6331153284789643,
+      "audit_sha256": "72119c5c216c2c19f62bc69934c854ec652defcd39e2c82c3f75bc754bcfeee1",
+      "scope": "Historical distinct sequential measurement, not causal speedup control"
+    },
+    "current_host_RGB_MiB": 576.52734375,
+    "current_host_encoded_MiB": 545.2890625,
+    "host_scope": "Current process RSS includes libraries/metadata and RGB cache where applicable; OSru_maxrss separate accounting, not minimumRAM"
+  },
+  "unsupported_claims": [
+    "Not every budget in64..2048 accuracy-qualified",
+    "No TensorRT configured budget>2048",
+    "No edge/rotation/dynamicbatch performance guarantee",
+    "No default schedule benchmark accuracy guarantee"
+  ]
+}
