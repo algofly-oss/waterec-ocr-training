@@ -148,3 +148,38 @@ usage includes CUDA context; host RSS includes libraries/metadata/cache and is
 not minimum RAM. Runtime v3 is a distinct sequential measurement from earlier
 private/cache trials, not a clock-controlled causal speedup. See
 [research history](compact_research.md) for those immutable older records.
+
+
+## External price-photo limitation
+
+The same qualified checkpoint was also tested on an existing **eight-photo
+licensed external probe**. Native FP32 and TensorRT each recovered **2/8 primary
+amounts**, both under strict decimal precision and under numeric equivalence.
+Visible currency was correct on **0/6** references that contain currency. The
+combined amount-and-currency count is 1/8, but that sole match has no visible
+currency; it is not evidence of successful currency recognition.
+
+Native and TensorRT raw strings agreed on **7/8**, with both differing outputs
+wrong by the frozen primary-price policy. The earlier **206/206 raw-string
+agreement remains a qualification of that specific cohort**, not a promise of
+backend identity on arbitrary photos. Read-only localization is tracked
+separately; no unique cause is claimed here.
+
+The unchanged PP-OCRv6 price engine also scored 2/8 amounts on these inputs; its
+native checkpoint result is not measured. Florence's older 3/8 record is a
+historical same-crop reference, not a current matched rerun: an original loader
+helper is unavailable. These are eight independent source photos, all obtained
+as licensed published display derivatives. The old probe has influenced research,
+so this repeat is exploratory and post-development, **not a blind population
+benchmark**. Dual-currency and primary/secondary-price ambiguities remain under
+the predeclared policy. Some currency glyphs are unsupported; all eight photos
+remain in the denominator.
+
+No crop, reference, checkpoint, precision or selection policy was changed for
+this repeat. Labels were not parsed or used to condition inference; provenance
+checks did binary-hash the reference files. Strict amount scoring preserves zeros
+and decimal precision; numeric equivalence is separate, with no substring search
+or decimal insertion. The result is negative evidence for broad price-photo
+capability despite the stronger in-domain 206 results. Aggregate metrics and the
+completed artifact-audit hash are in
+[the workflow record](../results/public_compact_workflow.json).

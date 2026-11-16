@@ -52,5 +52,54 @@
     "No TensorRT configured budget>2048",
     "No edge/rotation/dynamicbatch performance guarantee",
     "No default schedule benchmark accuracy guarantee"
-  ]
+  ],
+  "external_price_probe8": {
+    "status": "completed_exploratory_post_development_negative_capability_evidence",
+    "checkpoint_sha256": "1f803005cffaee87361474981326546ffb8677bdecb8b39ce29d778ac493dc0d",
+    "independent_licensed_photo_count": 8,
+    "published_display_derivatives_only": true,
+    "native_FP32": {
+      "strict_primary_amount_correct": 2,
+      "numeric_equivalent_primary_correct": 2,
+      "combined_amount_and_currency_correct": 1,
+      "visible_currency_correct": 0,
+      "visible_currency_reference_count": 6
+    },
+    "TensorRT": {
+      "strict_primary_amount_correct": 2,
+      "numeric_equivalent_primary_correct": 2,
+      "combined_amount_and_currency_correct": 1,
+      "visible_currency_correct": 0,
+      "visible_currency_reference_count": 6
+    },
+    "combined_currency_count_scope": "The sole combined match is a reference with no visible currency; it is not a correctly emitted currency glyph.",
+    "native_TensorRT_raw_identical": 7,
+    "backend_disagreement_count": 1,
+    "backend_disagreement_scope": "Both outputs on the differing photo fail the frozen primary-price reference. Preserve this failure separately from the exact 206-image fidelity qualification.",
+    "PP_OCRv6_same_frozen_engine": {
+      "strict_primary_amount_correct": 2,
+      "numeric_equivalent_primary_correct": 2,
+      "combined_amount_and_currency_correct": 1,
+      "visible_currency_correct": 0,
+      "native_checkpoint_result": "not measured; no frozen native checkpoint binding"
+    },
+    "Florence_historical_reference": {
+      "strict_primary_amount_correct": 3,
+      "n": 8,
+      "current_matched_rerun": false,
+      "limitation": "Historical same-crop record only; original loader helper unavailable, not a newly certified current inference."
+    },
+    "frozen_policy": "Whole-output primary amount; preserve decimal zeros and precision, comma-to-dot only. Decimal numeric equivalence reported separately; no substring matching, digit repair or decimal insertion.",
+    "limitations": [
+      "The existing eight-photo probe influenced research and is not a blind new population or population accuracy estimate.",
+      "Dual-currency and primary-versus-secondary-price ambiguity retained under the predeclared policy.",
+      "Some visible currency glyphs are outside the task vocabulary; no photos are filtered.",
+      "No crops, references, model selection, training, precision or weights changed for this repeat.",
+      "Labels were not parsed or used to condition inference; binary provenance hashing did read pinned reference files.",
+      "Strong in-domain 206 results do not establish generic price-photo capability."
+    ],
+    "completed_artifact_audit_sha256": "fec115290312bb55fe1a050c2faf957ce48371aa54fa2d7184174e841b7ad211",
+    "GT_access_scope_clarification_sha256": "3c7efe1df5577be2e36bb433effe86db05f3507a3b7ae386ea0e0b55ffa3d800",
+    "execution_protocol_sha256": "bb7e85a58a4bf82363fa961db1d3b857fa3ad4571ac482f45b553b36e8380092"
+  }
 }
