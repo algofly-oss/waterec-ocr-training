@@ -8,6 +8,28 @@ The strongest qualified WATERec operating points are RS/512 for plates and R/204
 
 The plate model scored 2,475/2,693 exact and 880/984 on reviewed unseen images. The price model scored 153/206 exact, 180/206 strict numeric and 132/144 on the clear AI-reviewed numeric subset. Florence's corresponding final price counts were 148/176/133. That supports a strong speed/accuracy tradeoff, not uniform superiority on every metric or country. PARSeq was stronger than WATERec on the particular US subset of the foreign-plate comparison.
 
+## Price resolution: measured lower-budget alternatives
+
+All three rows are the full **26,121,312-parameter WATERec R price model**, with all 12 vision blocks and two autoregressive decoder layers. These are not the experimental 5.5M custom models. The same 206 price report crops were evaluated, but the checkpoints were independently trained with different epoch counts and training pools; this is **not a controlled resolution-only ablation**.
+
+| Price checkpoint / fit policy | Budget / actual H×W / valid tokens | Raw exact /206 | Numeric /206 | AI-readable numeric /144 | RGB / encoded mean ms | PID GPU MiB |
+|---|---|---:|---:|---:|---:|---:|
+| R512,820 FIT,fixed17 epochs | 512 /64×128 /512 | 149 | 176 | 129 | 0.822072 /1.069492 | 688 |
+| R1024,820 FIT,fixed6 epochs | 1024 /88×180 /990,padded1024 | 154 | 181 | 131 | 1.089788 /1.339671 | 700 |
+| R2048,676 FIT,selectedepoch20 | 2048 /128×256 /2048 | 153 | 180 | 132 | 1.683839 /1.990325 | 716 |
+
+The listed geometry is H×W for the common 160×320 input crop. Native aspect-aware patch4 preprocessing can produce different shapes for other aspect ratios. R2048 selected on its original144-image internalDEV split; the other rows are fixed full820 refits. No checkpoint was selected by this new table. Thus the slightly higher R1024 supplied-label count is not proof that 1024 is intrinsically better than 2048, nor is the faster512 row equally accurate on every raised fraction.
+
+These are actual RTX5090/staticB1 TensorRT measurements, five warmups and three passes over 206 images. PredecodedRGB→text includes exact GPU resize/normalization/packing, H2D, encoder, all cached-greedy AR steps and Unicode decoding. Encoded additionally includes CPU file/image decoding. Model loading, compilation, detector and network are excluded. The measured paths use **opt-in/research GPU-preprocessing adapters**; a public default CPU-preprocessing run or a newly exported engine must be benchmarked separately. Do not silently assign these timings to the portable notebook defaults. Native/TRT strings agree on all 206 for each checkpoint; this is checkpoint-specific empirical parity, not a universal precision theorem or batch32 qualification.
+
+Raw exact retains punctuation and currency; numeric is a separately declared whole-value comparison. The AI-readable144 is a subset of 206, not the internal 144 DEV or human-certified ground truth.149/206 raw or154/206 raw is not a universal 90% claim, even when a reviewed numeric percentage exceeds90%.
+
+### Host RAM is a separate measurement
+
+R512/R1024 fresh-PID encoded-input functional probes record Linux `ru_maxrss` of 519.0/518.3MiB, five warmups then206 images, with no fullRGB preload and no timing claim. The R2048 timing processes record `ru_maxrss`545.5MiB for RGB-preloaded mode and514.8MiB encoded, while current `VmRSS` is549.2/517.8MiB. These fields use different OS accounting and are retained without forcing an invented peak order. Libraries, metadata, caches, host buffers and transient images are included; the probes/caches differ, so these are not minimum modelRAM or a monotonic resolution-scaling comparison. Driver NVML GPU peaks above include context/runtime/weights/scratch/activations and are distinct from hostRSS and weight-file size.
+
+[resolution_reference.json](../results/resolution_reference.json) preserves exact aggregates, checkpoint/engine evidence identifiers, measurement boundaries and public-safe sourceJSON hashes. No private images, real imageIDs, labels, caches or trained weights are included.
+
 ## What the difficult scenarios taught us
 
 - **Small fractions matter.** A model can read ordinary words and still discard price cents. Whole-string numeric accuracy is therefore reported alongside exact text and normalized edit similarity. No metric silently removes a decimal or extracts a convenient substring.

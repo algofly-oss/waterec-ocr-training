@@ -6,6 +6,8 @@ Our experiments with compact OCR for license plates and difficult price tags, wi
 
 Related repositories: [PARSeq Base / Tiny / Fast Tiny](https://github.com/algofly-oss/parseq-ocr-training), [CCT-S plate OCR](https://github.com/algofly-oss/license-plate-ocr-training), and [Florence-2](https://github.com/algofly-oss/vllm-ocr-training).
 
+For the measured price accuracy/latency/memory tradeoff at 512/1024/2048 patch budgets, see the [lower-resolution reference table](docs/experiments.md#price-resolution-measured-lower-budget-alternatives) and [scoped aggregate metadata](results/resolution_reference.json). The checkpoints have different training recipes; GPU-preprocessing timings do not automatically describe the default runtime.
+
 ## What we found
 
 WATERec was our strongest compact accuracy/speed compromise on the tested plate and price datasets. CCT-S and PARSeq Fast Tiny are smaller/faster operating points; they should not be assumed to preserve WATERec's difficult-layout or unseen-image accuracy.
