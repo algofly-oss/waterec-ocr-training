@@ -1,0 +1,12 @@
+{
+  "scope": "Original builder function ASTs before Torch-free extraction; no build policy changes",
+  "functions": {
+    "build_engines": "f93f2c116500078484658c97d928fc8f0bda2e9d306a7fcbfe32d7ead3a9a5b1",
+    "build_speculative": "cd524bdd1fabe33d8712cb569aa0424e7896d16e31ece6260cf38255b1c94939"
+  },
+  "baseline_commit": "8f286b539305eb559050364796506e728c09881f",
+  "baseline_files": {
+    "build_engines": "waterec_ocr/waterec_export.py",
+    "build_speculative": "waterec_ocr/waterec_speculative_export.py"
+  }
+}

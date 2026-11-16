@@ -8,13 +8,15 @@ version = "0.1.0"
 description = "WATERec OCR experiments, benchmarks and notebook-first training with ONNX/TensorRT deployment"
 requires-python = ">=3.10,<3.13"
 license = {file = "LICENSE"}
-dependencies = ["torch==2.10.0", "numpy==1.26.4", "Pillow==12.3.0", "PyYAML==6.0.1"]
+dependencies = [ "numpy==1.26.4", "Pillow==12.3.0", "PyYAML==6.0.1"]
 
 [project.optional-dependencies]
-notebooks = ["jupyterlab==4.4.3", "ipykernel==6.29.5", "matplotlib==3.9.1"]
-onnx = ["onnx==1.21.0", "onnxruntime==1.23.2"]
+training = ["torch==2.10.0"]
+build = ["onnx==1.21.0"]
+notebooks = ["torch==2.10.0", "jupyterlab==4.4.3", "ipykernel==6.29.5", "matplotlib==3.9.1"]
+onnx = ["torch==2.10.0", "onnx==1.21.0", "onnxruntime==1.23.2"]
 tensorrt = ["tensorrt-cu12==10.15.1.29", "pycuda==2026.1", "cuda-bindings==12.9.4", "nvidia-ml-py>=12"]
-test = ["pytest==8.3.5", "nbformat==5.10.4", "nbclient>=0.10,<1", "httpx==0.28.1", "fastapi==0.135.3"]
+test = ["torch==2.10.0", "pytest==8.3.5", "nbformat==5.10.4", "nbclient>=0.10,<1", "httpx==0.28.1", "fastapi==0.135.3"]
 
 [project.scripts]
 waterec-ocr = "waterec_ocr.waterec_cli:main"

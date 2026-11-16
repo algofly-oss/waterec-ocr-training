@@ -50,9 +50,13 @@ Or use a virtual environment:
 ```bash
 python -m pip install -e '.[notebooks,onnx]'
 # On the target NVIDIA/CUDA system, for engine building/inference:
-python -m pip install -e '.[tensorrt]'
+python -m pip install -e '.[build,tensorrt]'
 jupyter lab notebooks
 ```
+
+For inference-only installation without Torch or notebook/export packages, see
+[lean TensorRT deployment](docs/lean_deployment.md). Native PyTorch use and training
+without notebooks require the `training` extra.
 
 ## Notebook workflow
 

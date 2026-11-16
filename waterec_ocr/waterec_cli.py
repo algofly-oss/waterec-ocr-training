@@ -206,7 +206,7 @@ def main():
             )
         }
     elif args.command == "build-speculative":
-        from .waterec_speculative_export import build_speculative
+        from .waterec_build import build_speculative
 
         result = {
             "deployment": str(
@@ -262,7 +262,7 @@ def main():
             )
         }
     elif args.command == "build-orientation":
-        from .waterec_export import build_engines
+        from .waterec_build import build_engines
 
         folder, _ = deployment_metadata(config, orientation=True)
         result = {"deployment": str(build_engines(folder, force=args.force))}
@@ -275,7 +275,7 @@ def main():
 
         result = {"deployment": str(export_onnx(config, args.checkpoint))}
     elif args.command == "build":
-        from .waterec_export import build_engines
+        from .waterec_build import build_engines
 
         folder, _ = deployment_metadata(config)
         result = {"deployment": str(build_engines(folder, force=args.force))}
