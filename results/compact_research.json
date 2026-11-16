@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "qualified_research_not_portable_notebook_option",
+  "task": "price_tag_ocr",
+  "parameters": 17913953,
+  "checkpoint_sha256": "09bbfa15b014d28e8499f0bcd24184074d57fc359f523759c83347dd3da33769",
+  "independent_audit_sha256": "28591c456dec2ebf575adbd1b3180d5363ab4185fd6b3133b76f5d1193f68601",
+  "production_protocol_sha256": "a99efaae3d77cd2bd09d4a2e85915e50dca65a41371d69de93762806088d5845",
+  "input": {
+    "patch_size": 4,
+    "input_token_budget": 2048,
+    "typical_height": 128,
+    "typical_width": 256,
+    "late_memory_tokens": 512,
+    "batch_size": 1,
+    "aspect_preserving": true
+  },
+  "training": {
+    "image_text_only": true,
+    "human_boxes": false,
+    "fit_images": 820,
+    "head_epochs": 1,
+    "head_updates": 26,
+    "joint_epochs": 4,
+    "joint_updates": 208,
+    "selection": "Fixed terminal prospectively before final206; former144DEV incorporated into820TRAIN"
+  },
+  "metrics": {
+    "count": 206,
+    "correct": 159,
+    "CER": 0.14285714285714285,
+    "macro_normalized_similarity": 0.8916551086454002,
+    "numeric_correct": 186,
+    "AI_reviewed_count": 144,
+    "AI_reviewed_numeric_correct": 132,
+    "exact": 0.7718446601941747
+  },
+  "runtime": {
+    "backend": "TensorRT",
+    "hardware": "RTX5090",
+    "batch_size": 1,
+    "rgb_mean_ms": 1.4216375226537217,
+    "encoded_mean_ms": 1.69460092394822,
+    "sampled_process_gpu_peak_MiB": 708,
+    "rgb_current_host_RSS_MiB": 580.5859375,
+    "engine_disk_bytes": 39601976,
+    "warmups": 5,
+    "passes": 3,
+    "images_per_pass": 206
+  },
+  "qualification": {
+    "native_TRT_raw_identical": 206,
+    "timed_raw_identical": 1236,
+    "original_numeric_gate_pass": false,
+    "original_numeric_failed_steps": 7,
+    "original_numeric_failed_cases": 3,
+    "separate_output_gate_pass": true
+  },
+  "limitations": [
+    "One AI-reviewed numeric case below Florence:132/144 versus133/144.",
+    "Does not reach1ms.",
+    "No edge-device or dynamic-batch qualification.",
+    "No rotation qualification for this checkpoint.",
+    "Final qualification is post-development, not blind.",
+    "AI-reviewed labels are not human-certified.",
+    "Original0.05 numeric tolerance failed; output parity does not imply numeric or routing equivalence."
+  ]
+}
