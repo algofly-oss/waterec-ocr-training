@@ -56,6 +56,23 @@ Head-only token selection lost DEV accuracy before joint recovery. Learned 2×2 
 
 An additional matched five-epoch training test moved selection from block 6 to block 4. Its selected internal DEV result was **111/144 raw, 123/144 numeric and 48/54 reviewed**, versus the freshly trained control **119/127/48** and prior source **115/126/49**. Both arms used identical proper-source initialization and 215 updates. It failed the prospective accuracy gate; it was not exported or tested on the final 206. Passing four initial training examples did not predict held-out accuracy.
 
+## Additional rejected experiments
+
+These follow-ups used the proper 676 FIT /144 DEV split, not the full-820 refit. Each training comparison had its own freshly trained control. Counts below are raw exact /numeric exact over 144 DEV images, followed by AI-reviewed numeric on the 54-image DEV subset; compare within a row, not across different recipes.
+
+| Follow-up | Candidate DEV counts | Matched control | Outcome |
+|---|---:|---:|---|
+| Earlier selection, 20 scorer-only epochs then five joint epochs | 114 /123 /45 | 120 /130 /50 | Failed accuracy gate |
+| One decoder layer, five joint epochs | 116 /125 /47 | 118 /126 /48 | Failed accuracy gate |
+| One decoder layer, two decoder-only then three joint epochs | 112 /123 /47 | 118 /127 /50 | Failed accuracy gate |
+| Shifted spatial windows of 16×16 patches in the first four visual blocks | 112 /121 /48 | 116 /125 /48 | Failed accuracy gate |
+
+No candidate in this table proceeded to final-206 testing or TensorRT export. The one-layer candidate had 15,547,361 parameters; fewer parameters did not establish a usable accuracy/speed trade-off.
+
+A separate **275,524-parameter orientation classifier** used a frozen 202,080-parameter convolutional stem and a trained 73,444-parameter head. It is an auxiliary component, not a 275K-parameter OCR reader. After eight epochs, its selected DEV result was 567/576 correct quarter-turn classes, versus 576/576 for the encoder-based reference. These are four rotations of 144 images, not 576 independent images; both classifiers were selected on DEV.
+
+The paired diagnostic used the same proper-FIT OCR checkpoint for both correction methods. The small classifier preserved the reference pipeline's 115 /126 /49 counts at 0° and 90°, but reached only 113 /124 /48 at 180° and 114 /125 /49 at 270°. It lost no previously correct upright case, but failed both the orientation and whole-OCR accuracy gates. It was not exported, timed or tested on final206. The completed diagnostic artifact audit is `352ed21459a282b4f11c40c88a1be809b5e9e97ec998e0931e01e8f00560cc09`.
+
 ## Same-weight runtime trials
 
 Caching geometry uploads measured **1.397 ms RGB / 1.656 ms encoded**, with selection validation retained. An explicitly unchecked mode that also skips per-frame selection validation measured **1.332 / 1.620 ms**. Both retained 708 MiB process GPU usage, matched all 206 native strings and passed all combined 2,472 timed output checks. Weights, engines and precision were unchanged. These adapters are research code, not selectable notebook runtime options.
