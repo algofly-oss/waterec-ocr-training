@@ -59,6 +59,8 @@ Width-only expansion of an earlier small reader did not recover complex-price ac
 
 The experimental WATERec speculative decoder adds a 1,386,624-parameter draft to the unchanged OCR target. It is an optional faster-decoding mode, not a smaller WATERec architecture or PARSeq Fast Tiny. Draft/target checkpoint identities are bound together. Actual accuracy and numerical differences must be rechecked for each pair.
 
+A fresh standalone-package TensorRT replay preserved all 4,120 frozen speculative strings: 2,476/2,693 validation, 879/984 reviewed unseen and 332/443 foreign plates. Current batch-1 timing is **1.026 ms RGB / 2.024 ms encoded, 698 MiB GPU**, with a 27,507,168-parameter target-plus-draft model and a 512-patch budget (typical 64×128 input). Five warmups and three passes over 256 images were measured in separate fresh processes on RTX 5090. All verification and autoregressive fallback are included. Cached-FP16 agreement is **4,118/4,120**, with one validation gain and one unseen loss; this is not a lossless replacement. Historical 0.950 ms private and 0.977 ms legacy-public results describe separate snapshots. [Scoped aggregates](../results/reference_metrics.json) preserve the current checkpoint and audit hashes.
+
 No Nano/Small/Medium WATERec family with demonstrated equivalent accuracy is released here. Future exploratory architectures should remain outside the supported model-options table until trained and validated.
 
 ## Timing interpretation

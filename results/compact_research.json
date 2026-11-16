@@ -64,5 +64,51 @@
     "Final qualification is post-development, not blind.",
     "AI-reviewed labels are not human-certified.",
     "Original0.05 numeric tolerance failed; output parity does not imply numeric or routing equivalence."
-  ]
+  ],
+  "same_weight_runtime_trials": {
+    "status": "Research only; not selectable portable notebook runtime",
+    "audit_sha256": "95e1214bd084546449de82a93ef606f5a8bbb20dc52c812182f320d2860a917e",
+    "modes": {
+      "guarded": {
+        "RGB": {
+          "mean_ms": 1.396791279935275,
+          "median_ms": 1.421607,
+          "p95_ms": 1.5069635000000001,
+          "GPU_peak_MiB": 708.0,
+          "current_host_RSS_MiB": 581.453125
+        },
+        "encoded": {
+          "mean_ms": 1.6558497815533981,
+          "median_ms": 1.6731530000000001,
+          "p95_ms": 1.85268585,
+          "GPU_peak_MiB": 708.0,
+          "current_host_RSS_MiB": 549.9609375
+        }
+      },
+      "unchecked": {
+        "RGB": {
+          "mean_ms": 1.3324550841423948,
+          "median_ms": 1.368098,
+          "p95_ms": 1.425034,
+          "GPU_peak_MiB": 708.0,
+          "current_host_RSS_MiB": 581.453125
+        },
+        "encoded": {
+          "mean_ms": 1.6202672928802588,
+          "median_ms": 1.6282085,
+          "p95_ms": 1.785383,
+          "GPU_peak_MiB": 708.0,
+          "current_host_RSS_MiB": 549.84375
+        }
+      }
+    },
+    "limits": [
+      "Both modes preserve all206 native raw outputs and all2472 combined timed raw outputs.",
+      "Guarded caches geometry uploads; unchecked additionally disables per-frame selection validation.",
+      "Same weights, engines and precision; original numeric gate still failed.",
+      "Single experiment per mode, not a statistical or clock-controlled significance claim.",
+      "ru_maxrss possibly inherited, current VmRSS reported separately.",
+      "No edge, dynamic batch or rotation qualification."
+    ]
+  }
 }

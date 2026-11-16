@@ -134,6 +134,59 @@
         "actual_engine_calls": "Static batch1 each image; list input does not imply true tensor batch."
       },
       "timing_preprocessing": "Opt-in exact GPU preprocessing; image file decoding remains CPU when included"
+    },
+    "ALPR_RS512_speculative_standalone_requalification": {
+      "parameters": 27507168,
+      "enabled_by_default": false,
+      "native_token_budget": 512,
+      "typical_input_height": 64,
+      "typical_input_width": 128,
+      "quality": {
+        "validation": {
+          "correct": 2476,
+          "count": 2693
+        },
+        "reviewed_unseen": {
+          "correct": 879,
+          "count": 984
+        },
+        "international443": {
+          "correct": 332,
+          "count": 443
+        }
+      },
+      "static_B1": {
+        "RGB_mean_ms": 1.0259857890625,
+        "encoded_mean_ms": 2.0243708932291664,
+        "GPU_memory_MiB": 698,
+        "timing_images": 256,
+        "repeats": 3,
+        "warmups": 5,
+        "hardware": "RTX5090",
+        "backend": "TensorRT; exact GPU preprocessing; draft, verifier and all cached fallback included",
+        "host_RGB_after_run_MiB": 643.73046875,
+        "host_encoded_after_run_MiB": 565.64453125,
+        "host_scope": "Current Linux VmRSS, cached RGB256 versus encoded images; includes libraries and benchmark metadata, not minimum RAM. ru_maxrss may be inherited and is not used here."
+      },
+      "parity": {
+        "private_frozen_speculative_raw_identical": 4120,
+        "cached_FP16_raw_identical": 4118,
+        "cached_total": 4120,
+        "caveat": "Two strings differ: one validation gain and one reviewed-unseen loss. Not lossless against cachedFP16; ordinaryAR remains default."
+      },
+      "evidence": {
+        "protocol_sha256": "81eae7fa599a37e2a6b30465e42ebdaebadc81ee2a57c38e2c879f4a6f6e627c",
+        "independent_completed_audit_sha256": "ae179f7083beada42af86232b3b24854f43dc10261380b362adce40c9b4417d5",
+        "target_checkpoint_sha256": "dd496b04dcea6c4ccf972d24925ec89f040522e236052e5d9be8410ea4cf3c81",
+        "draft_checkpoint_sha256": "1915062c741ddcbcba8447136830290d6dbee08d31b5cf0e1df569b149036aeb",
+        "runtime_scope": "Standalone waterec_ocr package at 512 tokens; legacy package revision preserved separately."
+      },
+      "scope_limits": [
+        "No current price speculative qualification.",
+        "No new rotation qualification.",
+        "No edge-device measurement or dynamic-batch claim.",
+        "Historical0.950msprivate and0.977mslegacypublic are separate snapshots, not this current measurement."
+      ]
     }
   },
   "Fast_Tiny_optional_historical_baselines": [

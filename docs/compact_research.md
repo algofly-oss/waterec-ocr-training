@@ -34,3 +34,11 @@ Scope is static batch 1, input budget 2048, selected memory 512 and contiguous v
 Head-only token selection lost DEV accuracy before joint recovery. Learned 2×2 latent merging and late key/value mean pooling lost difficult fraction information. A no-fit local-attention-window probe also broke ordinary price sequences; it is not a qualified optimization. Profiling the qualified selector found about 72% of completed wall time in encoding, so decoder-only acceleration cannot remove most of its cost.
 
 [Machine-readable aggregates](../results/compact_research.json) contain checkpoint and evidence hashes without private images, labels or weights. See [experiment history](experiments.md) for full-model resolution alternatives and [capabilities](capabilities.md) for scenario limitations.
+
+An additional matched five-epoch training test moved selection from block 6 to block 4. Its selected internal DEV result was **111/144 raw, 123/144 numeric and 48/54 reviewed**, versus the freshly trained control **119/127/48** and prior source **115/126/49**. Both arms used identical proper-source initialization and 215 updates. It failed the prospective accuracy gate; it was not exported or tested on the final 206. Passing four initial training examples did not predict held-out accuracy.
+
+## Same-weight runtime trials
+
+Caching geometry uploads measured **1.397 ms RGB / 1.656 ms encoded**, with selection validation retained. An explicitly unchecked mode that also skips per-frame selection validation measured **1.332 / 1.620 ms**. Both retained 708 MiB process GPU usage, matched all 206 native strings and passed all combined 2,472 timed output checks. Weights, engines and precision were unchanged. These adapters are research code, not selectable notebook runtime options.
+
+These are single experiments per mode; small differences do not establish statistical significance or a clock-controlled speedup. Current RGB host RSS was 581.5 MiB in both trials; the separate encoded processes were about 550 MiB. An identical inherited OS high-watermark field is retained in private evidence and is not presented as minimum RAM. The geometry-change FIT check includes a return to the original shape. Neither mode reaches 1 ms or adds edge, dynamic-batch or rotation qualification.
