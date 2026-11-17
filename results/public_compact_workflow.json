@@ -100,6 +100,34 @@
     ],
     "completed_artifact_audit_sha256": "fec115290312bb55fe1a050c2faf957ce48371aa54fa2d7184174e841b7ad211",
     "GT_access_scope_clarification_sha256": "3c7efe1df5577be2e36bb433effe86db05f3507a3b7ae386ea0e0b55ffa3d800",
-    "execution_protocol_sha256": "bb7e85a58a4bf82363fa961db1d3b857fa3ad4571ac482f45b553b36e8380092"
+    "execution_protocol_sha256": "bb7e85a58a4bf82363fa961db1d3b857fa3ad4571ac482f45b553b36e8380092",
+    "Florence_fresh_source_closed_reference": {
+      "status": "completed_independent_current_inference_not_historical_retrocertification",
+      "parameters": 231414016,
+      "recovered_helper_sha256": "4c6c0b4ebef408430c0723d295b2c1f6a989b883bc484907d8d4030ebaf413d7",
+      "resolution": [
+        384,
+        384
+      ],
+      "backend": "Native Torch FP32 source weights with CUDA BF16 autocast; beam5,maxnewtokens32,cache; no timing qualification",
+      "strict_primary_amount_correct": 3,
+      "numeric_equivalent_primary_correct": 3,
+      "combined_amount_and_currency_correct": 1,
+      "visible_currency_correct": 0,
+      "visible_currency_reference_count": 6,
+      "n": 8,
+      "all8_historical_outerstrip_raw_strings_reproduced": true,
+      "actual_EOS_termination_count": 8,
+      "token_cap_hit_count": 0,
+      "old_historical_record_unchanged": true,
+      "source_scope": "Exact missing helper content recovered in immutable source snapshots; new inference pins actual current model/processor implementation, dependency closure, merged state and effective generation config. It does not retroactively certify the old environment.",
+      "same_frozen_probe_and_scoring": true,
+      "no_expected3of8_acceptance_gate": true,
+      "limitations": "Old exploratory post-development licensed display derivatives, not blind/population accuracy. Primary/secondary-price ambiguity retained. Combined currency match is a no-currency reference; no visible currency was correctly emitted.",
+      "new_protocol_sha256": "d21e366565d129b5c90311ecfd6e6fa5acfacb9a815286eb9f1aebd006689f07",
+      "CPU_merge_proof_sha256": "a584cdcc254c96fea36ef74ecfccb9c7d46999f9f6c8662f30f43ecc685c06ae",
+      "completed_artifact_audit_sha256": "5dae21315aae5b82c0c33b99352e4ac941197d9f0da5466a22924ac21fffb9d5",
+      "partial_decoder_checkpoint_sha256": "6595f6c833ed62fae3103f4367d512195cff635c83aba05d079fb990728572e1"
+    }
   }
 }

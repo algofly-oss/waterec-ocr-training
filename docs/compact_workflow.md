@@ -166,10 +166,19 @@ backend identity on arbitrary photos. Read-only localization is tracked
 separately; no unique cause is claimed here.
 
 The unchanged PP-OCRv6 price engine also scored 2/8 amounts on these inputs; its
-native checkpoint result is not measured. Florence's older 3/8 record is a
-historical same-crop reference, not a current matched rerun: an original loader
-helper is unavailable. These are eight independent source photos, all obtained
-as licensed published display derivatives. The old probe has influenced research,
+native checkpoint result is not measured. Florence now also has a **separate,
+source-closed native rerun: 3/8 amounts and 0/6 visible currencies**. Its sole
+combined amount-and-currency match also has no visible currency. The exact
+previously missing helper was recovered from archived source snapshots. With the
+same base and decoder checkpoint, 384×384 processing, BF16 autocast, beam 5 and a
+32-token cap, the new run reproduced all eight historical output strings. All
+eight ended with EOS before the cap. There was no expected-score acceptance gate.
+
+The older 3/8 record remains unchanged: recovering source and reproducing strings
+does not retroactively certify its original dependency environment. The fresh run
+has its own pinned current implementation, merged-weight proof and artifact
+audit. No latency or memory result is claimed for this rerun. These are eight
+independent source photos, all obtained as licensed published display derivatives. The old probe has influenced research,
 so this repeat is exploratory and post-development, **not a blind population
 benchmark**. Dual-currency and primary/secondary-price ambiguities remain under
 the predeclared policy. Some currency glyphs are unsupported; all eight photos
