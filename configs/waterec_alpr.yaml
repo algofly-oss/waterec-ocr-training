@@ -8,7 +8,7 @@ tokens: 512
 max_label_length: 24
 max_decode_steps: 25
 synthetic_plate_count: 0
-normalization: upper_no_whitespace
+normalization: none
 epochs: 20
 warmup_epochs: 3
 batch_size: 4

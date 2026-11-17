@@ -319,7 +319,7 @@ def main():
                     config["normalization"],
                     1,
                     args.output,
-                    price_numeric=config["task"] == "price",
+                    price_numeric=False,
                 )
         finally:
             if hasattr(recognizer, "close"):

@@ -48,7 +48,9 @@ class Label(BaseModel):
 @app.put("/api/labels/{name}")
 def save_label(name: str, label: Label):
     target = image_path(name).with_suffix(".txt")
-    text = label.text.strip()
+    text = label.text
+    if "\n" in text or "\r" in text:
+        raise HTTPException(status_code=422, detail="Single-line literal label required")
     if not text:
         raise HTTPException(status_code=422, detail="A label cannot be empty")
     with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=IMAGE_DIR,

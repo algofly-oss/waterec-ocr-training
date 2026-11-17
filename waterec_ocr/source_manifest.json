@@ -14,7 +14,8 @@
     "SharedNumPyCPUpreprocessing preservesoriginalPILresize/FP32normalization/RoPEpacking; GPUpreprocessorreceivesmetadatabudget.",
     "PriceSPACE embeddinginitializedtomeanoriginalprintableembeddingrows[1:-2];headtomeanoriginalprintableoutputrows[1:] (EOSexcluded,BOS/PADembeddingexcluded),matchingverifiedgenericmeanSPACEfactory. Existingrows/IDs preserved; temporaryconstructorsforkRNG soextensiondoesnotconsumecallerCPU/CUDARandomstate. CPUrow/mean/RNG/idempotencetestpasses. Thisalignmentdoesnotclaimfulltrainingrecipeidentity (batch/checkpointing/SDPA/memorydefaults can differ).",
     "Optional append-only additional_characters uses explicit ordered/hash/special-token/provenance metadata; empty/default preserves legacy. New rows require task training, not zero-shot capability.",
-    "Separate fixed-capacity compact batch family supports ASCII2048\u2192512/B1,2,4,8; original defaultB1 remains. Unicode batch explicitly rejected until separate qualification; Unicode staticB1 uses original path. Fixed capacity is not dynamic-batch/edge/generalized-parity qualification."
+    "Separate fixed-capacity compact batch family supports ASCII2048\u2192512/B1,2,4,8; original defaultB1 remains. Unicode batch explicitly rejected until separate qualification; Unicode staticB1 uses original path. Fixed capacity is not dynamic-batch/edge/generalized-parity qualification.",
+    "Current new-run policy is literal-string exact only with earliest tied checkpoint. Target/readout case,spaces,symbols remain literal; TXT consumes exactlyone optionalterminalLF/CRLF framingonly. Legacy normalized/numeric/edit-distance selection state requiresnewoutputdirectory; oldinference metadata retainedasprovenance, neverappliedasoutputnormalization. Historicalreports/archivesunchanged."
   ],
   "dependencies": {
     "core": [
@@ -48,11 +49,11 @@
   "CLI": "waterec_ocr.waterec_cli:main",
   "files": {
     "evaluation.py": {
-      "sha256": "9e7ec840f4ce824134159d2892c6f315483e73084bd0c1a356ceb6227ddec97e",
-      "bytes": 1285,
+      "sha256": "1c32b98fc08e29e073d4c67fa2c1d14030e0b31b65bc6bc9db8ff9c13c1f9471",
+      "bytes": 1190,
       "origin": "parseq_ocr/evaluation.py",
       "origin_sha256": "9e7ec840f4ce824134159d2892c6f315483e73084bd0c1a356ceb6227ddec97e",
-      "unchanged_from_origin": true
+      "unchanged_from_origin": false
     },
     "waterec_benchmark.py": {
       "sha256": "06122bd5651b730d417a32cb546e53020dbc7abce01dac66f193a085277ec31b",
@@ -62,8 +63,8 @@
       "unchanged_from_origin": false
     },
     "waterec_speculative_training.py": {
-      "sha256": "052fc6b6e4cfa6df71814bb0b8f8300f1bb83c6081ea2c1b92fa801ced931724",
-      "bytes": 26196,
+      "sha256": "a4df3e17e429df8034abbb81acd31c7f5590e2df85b17c9e39a233ae9a0ede28",
+      "bytes": 26151,
       "origin": "parseq_ocr/waterec_speculative_training.py",
       "origin_sha256": "a8b64ad86fdc354b4b1bba4cae71ed14a91593e4e5b0de26a743b2e03b2bc60b",
       "unchanged_from_origin": false
@@ -83,18 +84,18 @@
       "unchanged_from_origin": false
     },
     "waterec_export.py": {
-      "sha256": "b470bef446b29082bce7e4bd897b1a8dc6b38a4fd41d94e07665b485c90b430d",
-      "bytes": 17812,
+      "sha256": "0166e18367b167297de9d5468f7734d68dfd38913b1e7ce1d7493dbd7a51a7dd",
+      "bytes": 17792,
       "origin": "parseq_ocr/waterec_export.py",
       "origin_sha256": "724180727472acd1a3e7f5db77cc18676369881f03d8a1977a2096494338a607",
       "unchanged_from_origin": false
     },
     "data_io.py": {
-      "sha256": "9a5ce9319043154886404f433162afc923a96c91a2739c52db5fe2a58dd80c3c",
-      "bytes": 1481,
+      "sha256": "d3efac73937df7c807c7e9684429c586d87faa580ee4ee1c9d9ea60c3e41b7e3",
+      "bytes": 1854,
       "origin": "parseq_ocr/data_io.py",
       "origin_sha256": "9a5ce9319043154886404f433162afc923a96c91a2739c52db5fe2a58dd80c3c",
-      "unchanged_from_origin": true
+      "unchanged_from_origin": false
     },
     "waterec_speculative_export.py": {
       "sha256": "697ba25d8631f064ccb12500ee8e7e9a8cac9dc7df964cff716409ab77bbf846",
@@ -125,22 +126,22 @@
       "unchanged_from_origin": false
     },
     "metrics.py": {
-      "sha256": "fa9ca3784b00fee97fda860890458b7af19405d5fe3ab37a306ae33189df5b5e",
-      "bytes": 2293,
+      "sha256": "488dc6958bae6cf9314b62305ca14b16ca64b322fde73dacc62979c3efbfaef7",
+      "bytes": 2400,
       "origin": "parseq_ocr/metrics.py",
       "origin_sha256": "fa9ca3784b00fee97fda860890458b7af19405d5fe3ab37a306ae33189df5b5e",
-      "unchanged_from_origin": true
+      "unchanged_from_origin": false
     },
     "waterec_config.py": {
-      "sha256": "4991af97afe8d39c3cd8cd5574ce9c8574e24b404f587b06e183ce68e65c6b16",
-      "bytes": 2202,
+      "sha256": "7d51ed732b1d36ba70999c7311af5928cf2054811041d556ff00db1d96b575c8",
+      "bytes": 2216,
       "origin": "parseq_ocr/waterec_config.py",
       "origin_sha256": "f1a43efd0bbb8a525fbe1bb82b1049da10d3eb995eb4ec8afc5fb549e7856afb",
       "unchanged_from_origin": false
     },
     "waterec_training.py": {
-      "sha256": "92ea5619be732142fcbb3b752e3d9abbfbc979dd5950b1c701e909e7e09fefbc",
-      "bytes": 19039,
+      "sha256": "e6fb80697c388ef26b70ab9fe1e4ee49ad4b80a79787be0323fc0c55309e5cff",
+      "bytes": 19274,
       "origin": "parseq_ocr/waterec_training.py",
       "origin_sha256": "2599c089796d5101a77fcb2591862dc4a71705125e7dfd37bc2eb5598307a63f",
       "unchanged_from_origin": false
@@ -160,8 +161,8 @@
       "unchanged_from_origin": false
     },
     "waterec_models.py": {
-      "sha256": "76e3321d7171cf1cb8e2dd2f36b5203ef718724817f466124d068eada1a674ee",
-      "bytes": 13274,
+      "sha256": "96d4582ab3c31f6ac06b5ffc3e7b571ccfd00e8a02cbcb0d8e55ce363931192d",
+      "bytes": 13218,
       "origin": "parseq_ocr/waterec_models.py",
       "origin_sha256": "87444afb71ca899923e0571a076c07b1a4f821dd0e4d3a2eb92b4fa89dc8b717",
       "unchanged_from_origin": false
@@ -181,8 +182,8 @@
       "unchanged_from_origin": true
     },
     "waterec_cli.py": {
-      "sha256": "202da5a2fd788b5cfedce258cb3601efc9fc98bbd3cf90453e8819935930eb9b",
-      "bytes": 12918,
+      "sha256": "9bfe70bbd85f28103718774e00d5d45d03d45dcfe562e7eaccbf280827cb9913",
+      "bytes": 12898,
       "origin": "parseq_ocr/waterec_cli.py",
       "origin_sha256": "4934365603d21976c4e9c742f220a60e1737e05796e358d7dd999f2af0831144",
       "unchanged_from_origin": false
@@ -195,11 +196,11 @@
       "unchanged_from_origin": false
     },
     "data.py": {
-      "sha256": "08581e462004391c0882365844fa336ef25287ad2a9e6ba46be9ee73543751f7",
-      "bytes": 4828,
+      "sha256": "f5936afefce12e0c9bd4771798626bc54bb93a41a526ea6573e358f1650812bb",
+      "bytes": 4813,
       "origin": "parseq_ocr/data.py",
       "origin_sha256": "08581e462004391c0882365844fa336ef25287ad2a9e6ba46be9ee73543751f7",
-      "unchanged_from_origin": true
+      "unchanged_from_origin": false
     },
     "_native/__init__.py": {
       "sha256": "8ecae19e0f181083b24a39abcd4e9b7b5a57d48a2885f8d1e3d8348c0e48a107",
@@ -328,11 +329,11 @@
       "unchanged_from_origin": true
     },
     "waterec_compact_workflow.py": {
-      "sha256": "fc0870b65361c55c8a78835c5873a59bc180dd755667edb397e740d4bae8089c",
-      "bytes": 26433,
+      "sha256": "c336453736f008e20f5cdd01d7199668b10f1c31e37ceca3aa3b4d6bd1f6c04b",
+      "bytes": 26237,
       "origin": "standalone implementation",
       "origin_sha256": "fc0870b65361c55c8a78835c5873a59bc180dd755667edb397e740d4bae8089c",
-      "unchanged_from_origin": true
+      "unchanged_from_origin": false
     },
     "waterec_compact_batch_graphs.py": {
       "sha256": "aeb50bd9d22a318131c8d4860f26294929047d949b10329e9932d82b876e1f5b",
@@ -377,11 +378,11 @@
       "unchanged_from_origin": true
     },
     "waterec_compact_cli.py": {
-      "sha256": "d5f3419a552c9599670c2617d17c47bd6781d9346f06538ee417c3409bea78b1",
-      "bytes": 16590,
+      "sha256": "4c85bfb9d33647758cd8680a4627b22bd8357773931cb5edef3ef44f2da04013",
+      "bytes": 16400,
       "origin": "standalone implementation",
       "origin_sha256": "d5f3419a552c9599670c2617d17c47bd6781d9346f06538ee417c3409bea78b1",
-      "unchanged_from_origin": true
+      "unchanged_from_origin": false
     },
     "waterec_compact_batch_build.py": {
       "sha256": "6187f0670f19eecc8e6647ed902a3525d5454af535d932b61879b71d48d67630",

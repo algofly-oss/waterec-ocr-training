@@ -2,6 +2,8 @@
 
 Our experiments with compact OCR for license plates and difficult price tags, with a notebook workflow for training and ONNX/TensorRT deployment. The organization follows our [Florence-2 repository](https://github.com/algofly-oss/vllm-ocr-training): numbered notebooks, Docker/JupyterLab, an optional text annotator, and example data.
 
+**Compare the models:** [ALPR and price accuracy, latency and GPU-memory tables](docs/model_comparison.md).
+
 **Start with the findings:** [scenario capabilities](docs/capabilities.md), [experiments and methodology](docs/experiments.md), and [machine-readable reference measurements](results/reference_metrics.json). The included fictional images exercise the workflow; they are not the benchmark data and do not reproduce the reported accuracy.
 
 Related repositories: [PARSeq Base / Tiny / Fast Tiny](https://github.com/algofly-oss/parseq-ocr-training), [CCT-S plate OCR](https://github.com/algofly-oss/license-plate-ocr-training), and [Florence-2](https://github.com/algofly-oss/vllm-ocr-training).
@@ -17,11 +19,11 @@ WATERec was our strongest compact accuracy/speed compromise on the tested plate 
 | RS, plates | 26,120,544 | Aspect-preserving, up to 512 4×4 patches | 2,693 plate crops | 2,475 / 2,693 exact (91.90%) | 1.256 ms | 2.260 ms | 694 MiB |
 | Same plate model | same | same | 984 reviewed unseen crops | 880 / 984 exact (89.43%) | same timing cohort above | — | — |
 | Same plate model | same | same | 443 Brazil/Europe/US crops | 332 / 443 exact (74.94%) | not measured on this cohort | — | — |
-| R, prices, SPACE vocabulary | 26,121,312 | Up to 2,048 patches; these crops become 128×256 RGB | 206 price crops | 153 / 206 exact; 180 / 206 numeric | 1.684 ms | 1.990 ms | 716 MiB |
+| R, prices, SPACE vocabulary | 26,121,312 | Up to 2,048 patches; these crops become 128×256 RGB | 206 price crops | 153 / 206 exact (74.27%) | 1.684 ms | 1.990 ms | 716 MiB |
 
 Timing: RTX 5090, TensorRT, batch 1, five warmups, fresh processes, setup/compilation excluded. These reference timings use the separately enabled GPU preprocessing path; the default CPU preprocessing path has different costs. Plate timing used 256 mixed plate/unseen crops; price timing used 206 crops. GPU memory is a sampled process peak including the CUDA context, not model-file size or host RAM. Training batch size and batch-1 inference latency are different measurements. Details, dates, hardware and evidence identifiers are in the reference JSON.
 
-The price model achieved **132/144 on the clear AI-reviewed numeric subset**, versus Florence-2's 133/144; raw/numeric counts were 153/180 versus Florence's 148/176 on all 206 images. These are complementary metrics, not an unqualified win on every criterion. WATERec used 676 fitting images; the final Florence reference used 820. Reviewed labels are not independently certified ground truth.
+The price model achieved **153/206 literal exact matches (74.27%)**, versus Florence-2’s **148/206 (71.84%)**. WATERec used 676 fitting images; the final Florence reference used 820. Training recipes differ, and these results do not establish a general superiority claim. Current accuracy reporting uses literal full-string exact match only.
 
 ## Model choices
 
@@ -33,7 +35,7 @@ The price model achieved **132/144 on the clear AI-reviewed numeric subset**, ve
 | Alternate resolution profiles | 1,024-patch plates or 512-patch prices; validate separately | `configs/waterec_alpr_1024.yaml`, `configs/waterec_price_512.yaml` |
 | Experimental speculative decoding | Extra 1,386,624-parameter draft bound to its OCR checkpoint; optional, plate/512 only | Notebook 8 |
 
-R and RS are different pretrained checkpoints of the **same** 12-layer 384-wide encoder and two-layer autoregressive decoder. Changing resolution changes computation, not parameter count. There is no validated official “WATERec Fast Tiny” variant here: **Fast Tiny belongs to PARSeq**, documented in its separate repository. The latest 17.9M custom research terminal reaches 161/206 raw (78.16%), 187 numeric and 132/144 AI-reviewed numeric at 1.356083 ms RGB /708 MiB in public runtime v3. It remains one AI-reviewed numeric case below Florence and is available through a separate experimental workflow, not a standard R/RS pretrained option; 90.78% numeric is not 90% raw exact. See the [compact research update](docs/compact_research.md) for measured results and explicit limits.
+R and RS are different pretrained checkpoints of the **same** 12-layer 384-wide encoder and two-layer autoregressive decoder. Changing resolution changes computation, not parameter count. There is no validated official “WATERec Fast Tiny” variant here: **Fast Tiny belongs to PARSeq**, documented in its separate repository. The latest 17.9M custom research terminal reaches **161/206 exact matches (78.16%)** at 1.356083 ms RGB /708 MiB in public runtime v3. It is available through a separate experimental workflow, not a standard R/RS pretrained option. See the [compact research update](docs/compact_research.md) for historical results and explicit limits.
 
 ## Run like the Florence repository
 
@@ -69,7 +71,7 @@ without notebooks require the `training` extra.
 | [4. ONNX export](notebooks/4_onnx_export.ipynb) | Dense-RoPE encoder/cross-KV and cached-decoder export |
 | [5. ONNX inference](notebooks/5_onnx_inference.ipynb) | CPU ONNX Runtime inference and native-string comparison |
 | [6. TensorRT inference](notebooks/6_trt_inference.ipynb) | Build target-specific engines and check predictions |
-| [7. Evaluation and benchmark](notebooks/7_evaluation_and_benchmark.ipynb) | Accuracy, edit similarity, numeric prices and timing scopes |
+| [7. Evaluation and benchmark](notebooks/7_evaluation_and_benchmark.ipynb) | Evaluation and timing scopes; current accuracy policy is literal exact match |
 | [8. Optional acceleration](notebooks/8_optional_acceleration.ipynb) | Explicit GPU preprocessing, orientation and speculative options |
 | [9. Experimental compact workflow](notebooks/9_experimental_compact_workflow.ipynb) | Multistage rank recovery, image-only token selection and separate deployment |
 
@@ -79,7 +81,7 @@ Notebooks default to `configs/dummy_alpr.yaml`; set `WATEREC_CONFIG=configs/dumm
 
 A separate opt-in `waterec-compact` command (or `python -m waterec_ocr.waterec_compact_cli`) now supports native training, ONNX export, target-specific TensorRT build and inference. See [the workflow guide](docs/compact_workflow.md) and notebook 9. It uses multistage distillation, **not** the one-step Florence recipe. One-epoch defaults are demonstrations, not an accuracy recipe; no reference checkpoint is bundled. Supplied-teacher provenance is the caller's responsibility. There is no automatic resume, universal charset, dynamic-engine-budget, edge or rotation guarantee.
 
-The audited reference checkpoint's current public runtime v3 measured **1.356083 ms RGB /1.620985 ms encoded, 708 MiB**, with 17,913,953 parameters and a 2048-patch input reduced to 512 after six blocks. Its 161/206 raw, 187/206 numeric and 132/144 AI-reviewed numeric remain distinct from mean normalized Levenshtein similarity (90.18%). Training with demonstration settings does not inherit those results. Standard R/RS commands and configurations are unchanged.
+The audited reference checkpoint's current public runtime v3 measured **1.356083 ms RGB /1.620985 ms encoded, 708 MiB**, with 17,913,953 parameters and a 2048-patch input reduced to 512 after six blocks. It achieves **161/206 literal exact matches (78.16%)**. Training with demonstration settings does not inherit those results. Standard R/RS commands and configurations are unchanged.
 
 ## Your data and training
 

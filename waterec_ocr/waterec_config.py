@@ -26,8 +26,8 @@ def load_config(path="configs/waterec_alpr.yaml"):
         raise ValueError("warmup_epochs must be between zero and epochs")
     if not 0 < config.get("holdout_fraction", 0.1) < 1:
         raise ValueError("holdout_fraction must be between zero and one")
-    if config.get("normalization") not in ("upper_no_whitespace", "none"):
-        raise ValueError("Unsupported label normalization")
+    if config.get("normalization") not in ("none", "upper_no_whitespace"):
+        raise ValueError("Unsupported annotation-normalization metadata")
     if config.get("device") not in ("cpu", "cuda"):
         raise ValueError("device must be cpu or cuda")
     if config.get("precision") not in ("fp32", "bf16"):

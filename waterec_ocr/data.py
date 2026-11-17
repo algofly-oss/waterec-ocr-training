@@ -89,7 +89,7 @@ def save_manifest(records, path):
 
 
 def prepare_from_labeled(source, destination, val_fraction=.2, seed=42,
-                         normalization="upper_no_whitespace"):
+                         normalization="none"):
     """Copy labeled crops into new train/val folders, grouping identical labels."""
     destination = Path(destination)
     if any((destination/split).exists() and any((destination/split).iterdir())

@@ -16,7 +16,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from .data_io import scan_pairs, normalize
 from .data import split_holdout, audit_splits
-from .metrics import score_pairs, score_price_values
+from .metrics import score_pairs, selection_score, require_exact_selection, EXACT_POLICY
 from .waterec_models import (
     create_native,
     default_checkpoint,
@@ -138,10 +138,8 @@ def evaluate_records(model, records, config, output=None):
             for name, gt, prediction in zip(names, labels, texts)
         )
     labels, predictions = [r["gt"] for r in rows], [r["prediction"] for r in rows]
-    summary = score_pairs(labels, predictions, config.get("normalization", "none"))
+    summary = score_pairs(labels, predictions)
     summary["raw_correct"] = sum(gt == pred for gt, pred in zip(labels, predictions))
-    if config.get("task") == "price":
-        summary.update(score_price_values(labels, predictions))
     if output:
         output = Path(output)
         output.mkdir(parents=True, exist_ok=True)
@@ -155,10 +153,10 @@ def evaluate_records(model, records, config, output=None):
 def evaluate(config, checkpoint=None, manifest=None, output=None):
     recognizer = TorchRecognizer(config, checkpoint)
     records = (
-        read_manifest(manifest, config.get("normalization", "none"))
+        read_manifest(manifest, "none")
         if manifest
         else scan_pairs(
-            Path(config["dataset_root"]) / "val", config.get("normalization", "none")
+            Path(config["dataset_root"]) / "val", "none"
         )
     )
     return evaluate_records(recognizer.model, records, config, output)
@@ -189,6 +187,13 @@ def _checkpoint_config(config):
 def _fit(records, held, config, folder, epochs, resume):
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
+    last = folder / "last.pt"
+    resume_state = None
+    if last.exists():
+        if not resume:
+            raise FileExistsError(f"Training state exists: {last}; use resume or a new output_dir")
+        resume_state = torch.load(last, map_location="cpu", weights_only=False)
+        require_exact_selection(resume_state, str(last))
     _seed(config)
     model = create_native(config)
     for row in records + held:
@@ -210,13 +215,8 @@ def _fit(records, held, config, folder, epochs, resume):
     checkpoint = folder / ("best.pt" if held else "model.pt")
     last = folder / "last.pt"
     start_epoch, best, selected, history = 1, (-1.0, -1.0), 0, []
-    if last.exists():
-        if not resume:
-            raise FileExistsError(
-                f"Training state exists: {last}; use resume or a new output_dir"
-            )
-        # Only local resumable state uses weights_only=False; official downloads use True + SHA256.
-        state = torch.load(last, map_location="cpu", weights_only=False)
+    if resume_state is not None:
+        state = resume_state
         model.load_state_dict(state["state_dict"], strict=True)
         optimizer.load_state_dict(state["optimizer"])
         start_epoch, best, selected = (
@@ -267,11 +267,7 @@ def _fit(records, held, config, folder, epochs, resume):
         if held:
             row["holdout"] = evaluate_records(model, held, config)
             metric = row["holdout"]
-            score = (
-                (metric["numeric_correct"], metric["raw_correct"])
-                if config["task"] == "price"
-                else (metric["correct"], 0)
-            )
+            score = selection_score(metric)
         else:
             score = (epoch, 0)  # Fixed full refit: final epoch, no benchmark selection.
         if score > best:
@@ -279,6 +275,7 @@ def _fit(records, held, config, folder, epochs, resume):
             torch.save(
                 {
                     "state_dict": model.state_dict(),
+                "selection_policy": EXACT_POLICY,
                     "config": _checkpoint_config(config),
                     **alphabet_metadata(model),
                     "epoch": epoch,
@@ -289,6 +286,7 @@ def _fit(records, held, config, folder, epochs, resume):
         torch.save(
             {
                 "state_dict": model.state_dict(),
+                "selection_policy": EXACT_POLICY,
                 "optimizer": optimizer.state_dict(),
                 "epoch": epoch,
                 "best": best,
@@ -306,13 +304,14 @@ def _fit(records, held, config, folder, epochs, resume):
         (folder / "metrics.json").write_text(json.dumps({"history": history}, indent=2))
         print(json.dumps(row), flush=True)
     summary = {
+        "selection_policy": EXACT_POLICY,
         "epochs": epochs,
         "selected_epoch": selected,
         "training_images": len(records),
         "holdout_images": len(held),
         "checkpoint": str(checkpoint),
         "parameters": sum(p.numel() for p in model.parameters()),
-        "selection": "Internal real training holdout"
+        "selection": "Literal exact on internal real training holdout; earliest exact tie"
         if held
         else "Fixed full refit, final epoch",
     }
@@ -399,6 +398,8 @@ def _verify_input_fingerprint(output, fingerprint):
 
 
 def train(config, resume=True):
+    if config.get("normalization", "none") != "none":
+        raise ValueError("Literal training labels require normalization: none")
     config = dict(config)
     if (
         str(config.get("device", "cpu")).startswith("cuda")
@@ -488,8 +489,11 @@ def train(config, resume=True):
             fit + replay, held, config, output / "selection", config["epochs"], resume
         )
     )
+    require_exact_selection(selection, str(selection_file))
     if config.get("refit_all_training", True):
         refit_file = output / "full_fit/summary.json"
+        if refit_file.exists():
+            require_exact_selection(json.loads(refit_file.read_text()), str(refit_file))
         if not refit_file.exists():
             _fit(
                 real + replay,

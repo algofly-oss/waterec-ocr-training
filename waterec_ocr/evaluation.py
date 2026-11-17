@@ -6,8 +6,10 @@ from .data_io import scan_pairs
 from .metrics import score_pairs
 
 
-def evaluate_folder(recognizer, folder, normalization="upper_no_whitespace", batch_size=8, output=None, price_numeric=False):
-    records = scan_pairs(folder, normalization)
+def evaluate_folder(recognizer, folder, normalization="none", batch_size=8, output=None, price_numeric=False):
+    if price_numeric:
+        raise ValueError("Only literal-string exact reporting is supported")
+    records = scan_pairs(folder, "none")
     predictions = []
     for start in range(0, len(records), batch_size):
         images = []
@@ -15,10 +17,7 @@ def evaluate_folder(recognizer, folder, normalization="upper_no_whitespace", bat
             with Image.open(row["path"]) as image:
                 images.append(image.convert("RGB"))
         predictions.extend(recognizer.infer(images))
-    summary = score_pairs([r["label"] for r in records], predictions, normalization)
-    if price_numeric:
-        from .metrics import score_price_values
-        summary.update(score_price_values([r["label"] for r in records], predictions))
+    summary = score_pairs([r["label"] for r in records], predictions)
     if output:
         output = Path(output)
         output.mkdir(parents=True, exist_ok=True)

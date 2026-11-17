@@ -23,7 +23,7 @@ import torch
 
 from .data_io import scan_pairs
 from .data import audit_splits, split_holdout
-from .metrics import edit_distance, score_pairs, score_price_values
+from .metrics import score_pairs, selection_score, EXACT_POLICY
 from .waterec_models import create_native
 from .waterec_compact_models import CompactWATERec, load_compact_checkpoint
 from .waterec_compact_training import (
@@ -101,7 +101,7 @@ def _model_config(config):
             'tokens': config.get('tokens', 512), 'include_space': config.get('include_space', task == 'price'),
             'max_label_length': config.get('max_label_length', 24),
             'max_decode_steps': config.get('max_decode_steps', 25),
-            'normalization': config.get('normalization', 'none' if task == 'price' else 'upper_no_whitespace')}
+            'normalization': config.get('normalization', 'none')}
     if 'additional_characters' in config:
         from .waterec_charset import validate_additions
         additional=validate_additions(config['additional_characters'])
@@ -155,12 +155,8 @@ def _evaluate(model, rows, device, batch_size, prune):
                            for row, prediction in zip(part, text))
     labels, predictions = [r['gt'] for r in records], [r['prediction'] for r in records]
     metrics = score_pairs(labels, predictions, normalization='none')
-    metrics['macro_normalized_Levenshtein_similarity'] = sum(
-        1 - edit_distance(a, b) / max(len(a), len(b), 1) for a, b in zip(labels, predictions)) / len(rows)
-    if model.config['task'] == 'price':
-        metrics.update(score_price_values(labels, predictions))
     return {'metrics': metrics, 'records': records, 'image_only': True,
-            'prune': prune, 'selection': 'raw correct, then mean normalized Levenshtein similarity; earliest exact tie'}
+            'prune': prune, 'selection': 'literal exact count only; earliest tie'}
 
 
 def _memory_guard(config, device):
@@ -276,7 +272,7 @@ def _run_stage(model, teacher, stage, name, epochs, fit, validation, config, out
                 epoch_metrics.append(metrics)
                 _memory_guard(config, device)
         evaluation = _evaluate(model, validation, device, config.get('evaluation_batch_size', 1), prune=stage != 'recovery')
-        score = None if evaluation is None else (evaluation['metrics']['correct'], evaluation['metrics']['macro_normalized_Levenshtein_similarity'])
+        score = None if evaluation is None else selection_score(evaluation['metrics'])
         improved = score is not None and (best_score is None or score > best_score)
         if improved:
             best_score, selected_epoch = score, epoch
@@ -288,11 +284,11 @@ def _run_stage(model, teacher, stage, name, epochs, fit, validation, config, out
             raise ValueError('Frozen teacher changed')
         payload = model.checkpoint_payload()
         payload.update(optimizer=optimizer.state_dict(), rng=_rng(device),
-                       compact_training={'schema': 1, 'stage': stage, 'name': name, 'epoch': epoch,
+                       compact_training={'schema': 1, 'selection_policy': EXACT_POLICY, 'stage': stage, 'name': name, 'epoch': epoch,
                                          'steps': steps, 'initial_state': initial_state, 'model_state': _state(model),
                                          'teacher_state': teacher_state, 'binding': binding,
                                          'selected_epoch': selected_epoch, 'best_score': best_score,
-                                         'selection': 'image-only raw→Lev, earliest tie, including epoch0' if validation else 'fixed terminal; no validation',
+                                         'selection': 'image-only literal exact count only, earliest tie, including epoch0' if validation else 'fixed terminal; no validation',
                                          'target_policy': 'Frozen teacher RAW T2 once; meanlayers/heads thenMAXvalidGTchar+EOS importance normalized once',
                                          'prune_training': stage == 'joint', 'prune_validation': stage != 'recovery',
                                          'history': history, 'stream': stream,
@@ -329,6 +325,8 @@ def train_compact(config):
     Explicit teacher_mode='upstream', allow_upstream_teacher=True skips that step.
     """
     config = dict(config)
+    if config.get('normalization', 'none') != 'none':
+        raise ValueError('Literal training labels require normalization: none')
     mc = _model_config(config)
     device = torch.device(config.get('device', 'cpu'))
     if config.get('precision', 'fp32') not in ('fp32', 'bf16'):
@@ -432,9 +430,9 @@ def train_compact(config):
         raise ValueError('Standard teacher changed')
     model.eval()
     final = model.checkpoint_payload()
-    final.update(compact_training={'schema': 1, 'stage': 'final_inference', 'binding': binding,
+    final.update(compact_training={'schema': 1, 'selection_policy': EXACT_POLICY, 'stage': 'final_inference', 'binding': binding,
                                    'stages': results, 'model_state': _state(model),
-                                   'selection': 'Selected stage states; raw→Lev earliest ties, or fixed terminal without validation'},
+                                   'selection': 'Selected stage states; literal exact only, earliest ties, or fixed terminal without validation'},
                  rng=_rng(device))
     _atomic_torch(output / 'model.pt', final)
     fresh = load_compact_checkpoint(output / 'model.pt', device=device)

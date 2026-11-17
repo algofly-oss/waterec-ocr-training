@@ -69,7 +69,7 @@ def _canonical(config):
     config.setdefault('include_space', config['task'] == 'price')
     config.setdefault('max_label_length', 24)
     config.setdefault('max_decode_steps', 25)
-    config.setdefault('normalization', 'none' if config['task'] == 'price' else 'upper_no_whitespace')
+    config.setdefault('normalization', 'none')
     if config['variant'] not in WEIGHTS or config['task'] not in ('plate', 'price'):
         raise ValueError('WATERec requires task plate/price and variant R/RS')
     if config['tokens'] < 64 or not 1 <= config['max_label_length'] <= 25:

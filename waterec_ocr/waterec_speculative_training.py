@@ -70,12 +70,12 @@ def _settings(config):
 def _training_rows(config, fixed):
     records = (
         read_manifest(
-            config["train_manifest"], config.get("normalization", "upper_no_whitespace")
+            config["train_manifest"], config.get("normalization", "none")
         )
         if config.get("train_manifest")
         else scan_pairs(
             Path(config["dataset_root"]) / "train",
-            config.get("normalization", "upper_no_whitespace"),
+            config.get("normalization", "none"),
         )
     )
     real = [row for row in records if not row.get("synthetic")]
@@ -104,7 +104,7 @@ def _training_rows(config, fixed):
     if config.get("synthetic_manifest"):
         replay += read_manifest(
             config["synthetic_manifest"],
-            config.get("normalization", "upper_no_whitespace"),
+            config.get("normalization", "none"),
         )
     count = int(config.get("synthetic_plate_count", 2048))
     if count < 0:

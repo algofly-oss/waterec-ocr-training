@@ -9,7 +9,7 @@ SPDX-License-Identifier: Apache-2.0
 import argparse,hashlib,json,os,resource,threading,time
 from pathlib import Path
 from .data_io import IMAGE_EXTENSIONS,scan_pairs
-from .metrics import score_pairs,score_price_values
+from .metrics import score_pairs
 
 
 def _sha(path):
@@ -88,7 +88,7 @@ def _image(path):
 
 def _rows(args,metadata):
     if args.command=='evaluate':
-        rows=scan_pairs(args.folder,metadata.get('normalization','none'))
+        rows=scan_pairs(args.folder,'none')
         allowed=set(metadata['characters'][1:metadata['bos']])
         for row in rows:
             if len(row['label'])>24 or any(c not in allowed for c in row['label']):raise ValueError('Unsupported/max24 label: '+row['image'])
@@ -167,8 +167,7 @@ def _predict(args):
         result={'backend':args.backend,'records':records,'images':len(rows),'batch_size':args.batch_size,'static_deployment_B1':args.backend!='torch' and fixed_batch in [None,1],'scope':'Image-to-rawtext only; no correction, orientation or speculative inference'}
         if fixed_batch:result['static_deployment_batch']=fixed_batch
         if args.command=='evaluate':
-            labels=[r['label'] for r in rows];preds=[r['prediction'] for r in records];result['metrics']=score_pairs(labels,preds,metadata.get('normalization','none'))
-            if metadata.get('task')=='price':result['metrics'].update(score_price_values(labels,preds))
+            labels=[r['label'] for r in rows];preds=[r['prediction'] for r in records];result['metrics']=score_pairs(labels,preds)
         if benchmark:
             import numpy as np
             first={r['image']:r['prediction'] for r in records if r['repeat']==0};result.update(repeats=args.repeats,warmups=5,timed_images=len(rows)*args.repeats,consistent_raw_across_passes=all(first[r['image']]==r['prediction'] for r in records),timed_batches=timings,weighted_ms_per_image=sum(r['batch_ms'] for r in timings)/(len(rows)*args.repeats),images_per_second=len(rows)*args.repeats*1000/sum(r['batch_ms'] for r in timings),batch_ms={'mean':float(np.mean([r['batch_ms'] for r in timings])),'median':float(np.median([r['batch_ms'] for r in timings])),'p95':float(np.percentile([r['batch_ms'] for r in timings],95))},predecoded=args.predecoded,host_bytes={'before_load':before,'after_load':after,'ready':ready,'after_run':_rss(),'ru_maxrss':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024},PID=os.getpid(),memory=sampler.close() if sampler else None,timing_scope='Completed full AR andUnicode; PIL filedecode included unlesspredecoded; load/setup/5warmups excluded timing; memory coversload/warmup/run. CurrentRSS vs highwatermark notminimumRAM.')

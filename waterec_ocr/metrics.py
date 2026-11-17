@@ -17,13 +17,7 @@ def price_value(text):
 
 
 def score_price_values(labels, predictions):
-    if len(labels) != len(predictions) or not labels:
-        raise ValueError("Need equally-sized nonempty labels and predictions")
-    correct = sum(price_value(gt) is not None and price_value(gt) == price_value(pred)
-                  for gt, pred in zip(labels, predictions))
-    return {"numeric_correct": correct, "numeric_accuracy": correct / len(labels),
-            "numeric_reference_parseable": sum(price_value(gt) is not None for gt in labels),
-            "numeric_metric": "Whole string decimal with optional DH; unparseable values count incorrect"}
+    raise ValueError("Numeric-equivalence reporting is disabled; use literal score_pairs")
 
 
 def edit_distance(a, b):
@@ -36,16 +30,29 @@ def edit_distance(a, b):
     return previous[-1]
 
 
-def score_pairs(labels, predictions, normalization="upper_no_whitespace"):
+EXACT_POLICY = "literal_string_exact_v1"
+
+
+def require_exact_selection(state, where="training state"):
+    if state.get("selection_policy") != EXACT_POLICY:
+        raise ValueError(f"{where} uses a legacy/incompatible selection policy; choose a new output directory. Old normalized/numeric/edit-distance scores cannot be resumed as literal exact.")
+    return state
+
+
+def selection_score(metrics):
+    if metrics.get("metric_policy") != EXACT_POLICY:
+        raise ValueError("Checkpoint selection requires literal-string exact metrics")
+    return (metrics["correct"], 0)  # Earliest epoch wins an exact-count tie.
+
+
+def score_pairs(labels, predictions, normalization="none"):
+    """Literal equality only: no case, whitespace, Unicode or numeric conversion."""
+    if normalization not in (None, "none"):
+        raise ValueError("Scoring is literal exact only; normalization must be none")
     if len(labels) != len(predictions) or not labels:
         raise ValueError("Need equally-sized nonempty labels and predictions")
-    correct = edits = characters = alphanumeric = 0
-    for gt, pred in zip(labels, predictions):
-        gt, pred = normalize(gt, normalization), normalize(pred, normalization)
-        correct += gt == pred
-        edits += edit_distance(gt, pred)
-        characters += len(gt)
-        clean = lambda text: "".join(c for c in text if c.isalnum())
-        alphanumeric += clean(gt) == clean(pred)
-    return {"n": len(labels), "correct": correct, "exact_accuracy": correct/len(labels),
-            "cer": edits/max(characters, 1), "alphanumeric_exact_accuracy": alphanumeric/len(labels)}
+    if any(not isinstance(x, str) for x in list(labels) + list(predictions)):
+        raise TypeError("Labels and predictions must be strings")
+    correct = sum(gt == pred for gt, pred in zip(labels, predictions))
+    return {"n": len(labels), "correct": correct, "exact_accuracy": correct / len(labels),
+            "metric_policy": EXACT_POLICY}

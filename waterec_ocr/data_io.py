@@ -5,15 +5,26 @@ from PIL import Image
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
 
-def normalize(text, mode="upper_no_whitespace"):
-    if mode == "upper_no_whitespace":
-        return "".join(text.upper().split())
-    if mode == "none":
-        return text.rstrip("\r\n")
-    raise ValueError(f"Unknown normalization: {mode}")
+def normalize(text, mode="none"):
+    if mode not in (None, "none"):
+        raise ValueError("Literal text is required; normalization must be none")
+    return text
 
 
-def scan_pairs(folder, normalization="upper_no_whitespace"):
+def read_label(path):
+    """One optional terminal CRLF/LF frames a TXT record; all other text is literal."""
+    with Path(path).open(encoding="utf-8", newline="") as stream:
+        text = stream.read()
+    if text.endswith("\r\n"):
+        text = text[:-2]
+    elif text.endswith("\n"):
+        text = text[:-1]
+    if "\n" in text or "\r" in text:
+        raise ValueError(f"Single-line TXT label required: {path}; only one terminal LF/CRLF is record framing")
+    return text
+
+
+def scan_pairs(folder, normalization="none"):
     folder = Path(folder).resolve()
     if not folder.is_dir():
         raise FileNotFoundError(f"Dataset directory not found: {folder}")
@@ -27,7 +38,7 @@ def scan_pairs(folder, normalization="upper_no_whitespace"):
         label = image.with_suffix(".txt")
         if not label.is_file():
             raise ValueError(f"Missing label: {label.name}")
-        text = normalize(label.read_text(encoding="utf-8"), normalization)
+        text = normalize(read_label(label), normalization)
         if not text:
             raise ValueError(f"Empty label: {label.name}")
         with Image.open(image) as im:
