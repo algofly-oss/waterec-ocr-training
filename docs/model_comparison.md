@@ -12,17 +12,17 @@ Exact means the complete output string matches the reference. Input dimensions a
 | WATERec speculative¹ | 27.507M | ≤512 patches | 2,476 (91.94%) | 879 (89.33%) | 1.026 | 698 |
 | WATERec RS rank128 (research) | 17.863M | ≤512 patches | 2,468 (91.65%) | 849 (86.28%) | 1.325 | 694 |
 | Florence-2 optimized | 231.414M | 224×224 | 2,381 (88.41%) | 857 (87.09%) | 5.066 | 1130 |
-| PP-OCRv6-derived medium | 15.580M | 48×320 | Not verified | Not verified | 1.157 | 654 |
-| PARSeq Fast Tiny² | 6.049M | 48×192 | Not verified | Not verified | 0.686 | 682 |
-| CCT-S³ | 0.978M | 64×128 | Not verified | Not verified | 0.447 | 742 |
+| PP-OCRv6-derived medium | 15.580M | 48×320 | 2,310 (85.78%) | 571 (58.03%) | 1.157 | 654 |
+| PARSeq Fast Tiny² | 6.049M | 48×192 | 2,377 (88.27%) | 715 (72.66%) | 0.686 | 682 |
+| CCT-S³ | 0.978M | 64×128 | 2,315 (85.96%) | 644 (65.45%) | 0.447 | 742 |
 | WATERec RS FP8 MLP (opt-in)⁴ | 26.121M | ≤512 patches | 2,472 (91.79%) | 880 (89.43%) | 1.323 | 584 |
 
 The rank128 ALPR row uses **raw exact: 2,468/2,693**, not its separately reported canonicalized count of **2,469/2,693**. Canonicalization can change a match; the table does not mix those metrics.
 
 1. Speculative decoding includes its draft parameters. These scores belong to that engine; it is **not lossless** against ordinary FP16 decoding.
-2. Fast Tiny’s 2,378/2,693 and 715/984 are historical nonliteral/normalized aggregates, not verified literal counts. The currently preserved executable/reference replay verifies **203/256** only; the full-cohort figures are not current replay qualification.
-3. CCT-S’s historical 2,315/2,693 has not been certified as literal; the original normalization implementation is unavailable for a complete identity proof. The raw files behind historical 644/984 have been deleted. Neither count is presented as literal accuracy. Its B1 timing retains the original **max-batch-32 allocation and output-copy policy**; the price row uses a separately measured static-B1 price model.
-PP’s historical 2,310/2,693 and 571/984 were normalized before their predictions were saved, so the original literal counts cannot be reconstructed from those files. A new literal replay is needed. **Not verified** means no certified literal count, not zero accuracy.
+2. Fast Tiny’s fresh literal replay verifies **2,377/2,693 and 715/984**. Its historical validation aggregate was one match higher. The historical timing cohort remains 256 crops; this replay is an accuracy check, not a new latency measurement.
+3. CCT-S’s fresh literal replay verifies **2,315/2,693 and 644/984** using the current engine and restored original image bytes. Its B1 timing retains the original **max-batch-32 allocation and output-copy policy**; the price row uses a separately measured static-B1 price model.
+PP’s fresh literal replay verifies **2,310/2,693 and 571/984**. The raw CTC strings were saved before scoring; runtime trimming changed no outputs on these cohorts. See the [fresh replay receipts](../results/literal_alpr_replay_2026_11_17.json).
 
 4. FP8 MLP is hardware-specific and opt-in. It loses three validation matches against ordinary FP16; reduced memory does not establish better accuracy or speed.
 

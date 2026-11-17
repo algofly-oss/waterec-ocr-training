@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-17",
+  "metric": "Literal full-string equality to unchanged original references; no normalization",
+  "scope": "Fresh actualTensorRTreplay,2693validation+984reviewedunseen crops/model; rawstringssavedbeforeGTscore",
+  "protocol_sha256": "779144a44edb3b325e3999fe2512ffa6854bbc406b5661aa0726b0d9cee12d29",
+  "models": {
+    "PP": {
+      "scores": {
+        "validation": {
+          "n": 2693,
+          "literal_exact_fullstring_correct": 2310,
+          "runtime_strip_changed_count": 0
+        },
+        "unseen": {
+          "n": 984,
+          "literal_exact_fullstring_correct": 571,
+          "runtime_strip_changed_count": 0
+        }
+      },
+      "receipt_sha256": "b06767f81a99d1c484932e51c04bc3f872ec5da16c9c4b85f7d4847eb2cff7b0",
+      "raw_predictions_sha256": "1651039d1e23e3c5ccea4040bf014cc62bbd01a6d8fbfdd37e9ebe10677733d9"
+    },
+    "CCT": {
+      "scores": {
+        "validation": {
+          "n": 2693,
+          "literal_exact_fullstring_correct": 2315,
+          "runtime_strip_changed_count": 0
+        },
+        "unseen": {
+          "n": 984,
+          "literal_exact_fullstring_correct": 644,
+          "runtime_strip_changed_count": 0
+        }
+      },
+      "receipt_sha256": "c691896023578aa917c02e2bfc7f80306eb736326c1898f0babb7eb2b9cdb320",
+      "raw_predictions_sha256": "1f5feee436dc4078df5422a62ce22aefaa06b9b8f2cf92b54c3fb88dfe8e5184"
+    },
+    "FastTiny": {
+      "scores": {
+        "validation": {
+          "n": 2693,
+          "literal_exact_fullstring_correct": 2377,
+          "runtime_strip_changed_count": 0
+        },
+        "unseen": {
+          "n": 984,
+          "literal_exact_fullstring_correct": 715,
+          "runtime_strip_changed_count": 0
+        }
+      },
+      "receipt_sha256": "0746b6da791be94e67301a3bc9939d65ec7927119e8d6358dc3426ded99b0e2a",
+      "raw_predictions_sha256": "f89924a21d94550b3832f3c4057e2f8b5da5c6ae29a6d616ec50d6db8f439e36"
+    }
+  }
+}
