@@ -177,6 +177,8 @@ class TensorRTRecognizer:
         self.folder = pathlib.Path(deployment)
         self._closed = False
         metadata = json.loads((self.folder / "metadata.json").read_text())
+        from .waterec_charset import validate_deployment
+        validate_deployment(metadata)
         if (
             metadata.get("family") != "waterec_compact"
             or type(metadata.get("max_tokens")) is not int or metadata["max_tokens"] < 64

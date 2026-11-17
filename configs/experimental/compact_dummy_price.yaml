@@ -7,6 +7,9 @@ task: price
 variant: R
 tokens: 64
 include_space: true
+# Optional ordered Unicode additions require a matching teacher and task training.
+# Empty preserves the original alphabet; Unicode ONNX/TRT currently uses B1 only.
+additional_characters: []
 max_label_length: 24
 max_decode_steps: 25
 normalization: none

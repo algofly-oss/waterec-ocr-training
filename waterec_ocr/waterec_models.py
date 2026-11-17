@@ -53,6 +53,13 @@ def download_pretrained(variant, folder):
 
 def _canonical(config):
     config = dict(config)
+    from .waterec_charset import validate_additions
+    if 'additional_characters' in config:
+        additional = validate_additions(config['additional_characters'])
+        if additional:
+            config['additional_characters'] = additional
+        else:
+            config.pop('additional_characters', None)
     config.setdefault('task', 'plate')
     config.setdefault('variant', 'RS')
     budget = config.get('tokens', config.get('max_patch_tokens', 512))
@@ -197,12 +204,17 @@ def create_native(config, checkpoint=None, pretrained=True):
         recorded = _canonical(recorded)
         keys = ('task', 'variant', 'tokens', 'include_space', 'max_label_length', 'max_decode_steps', 'normalization')
         differences = {key: (recorded[key], config[key]) for key in keys if recorded[key] != config[key]}
+        if recorded.get('additional_characters', []) != config.get('additional_characters', []):
+            differences['additional_characters'] = (recorded.get('additional_characters', []), config.get('additional_characters', []))
         if differences:
             raise ValueError(f'Checkpoint/config profile mismatch (saved, requested): {differences}')
     model = NativeWATERec(config)
+    from .waterec_charset import extend_characters, restore_metadata
     if payload is not None:
         if config['include_space']:
             model.add_space()
+        extend_characters(model, config.get('additional_characters', []))
+        restore_metadata(model, payload)
         model.load_state_dict(payload['state_dict'], strict=True)
     else:
         if pretrained:
@@ -211,6 +223,8 @@ def create_native(config, checkpoint=None, pretrained=True):
             model.load_state_dict(payload.get('state_dict', payload), strict=True)
         if config['include_space']:
             model.add_space()
+        provenance = {'source': 'official_pretrained' if pretrained else 'fresh_initialization', 'source_checkpoint_sha256': WEIGHTS[config['variant']][1] if pretrained else None, 'optimizer': 'fresh; no optimizer-state migration'}
+        extend_characters(model, config.get('additional_characters', []), provenance)
     return model
 
 
@@ -222,6 +236,9 @@ def load_native(checkpoint, device='cpu'):
     model = NativeWATERec(config)
     if model.config['include_space']:
         model.add_space()
+    from .waterec_charset import extend_characters, restore_metadata
+    extend_characters(model, model.config.get('additional_characters', []))
+    restore_metadata(model, payload)
     model.load_state_dict(payload['state_dict'], strict=True)
     return model.eval().to(device)
 
@@ -244,3 +261,12 @@ class TorchRecognizer:
             tensors = [self.model.preprocess(image).to(self.device) for image in images[start:start + batch]]
             result.extend(self.model.decode(self.model(tensors)))
         return result
+
+
+def migrate_native_checkpoint(checkpoint, additional_characters):
+    """Explicit append-only task-checkpoint migration; fresh optimizer required."""
+    from .waterec_charset import extend_characters, metadata, vocabulary_hash
+    model=load_native(checkpoint)
+    provenance={'source':'explicit_task_checkpoint_migration','source_checkpoint_sha256':sha256(checkpoint),'source_vocabulary_sha256':vocabulary_hash(model.characters),'optimizer':'fresh; optimizer state not migrated'}
+    extend_characters(model,additional_characters,provenance)
+    return model,dict(config=dict(model.config),state_dict=model.state_dict(),**metadata(model))

@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 import numpy as np
 from PIL import Image, ImageEnhance
+from .waterec_charset import metadata as alphabet_metadata
 import torch
 from torch.utils.data import DataLoader, Dataset
 from .data_io import scan_pairs, normalize
@@ -279,6 +280,7 @@ def _fit(records, held, config, folder, epochs, resume):
                 {
                     "state_dict": model.state_dict(),
                     "config": _checkpoint_config(config),
+                    **alphabet_metadata(model),
                     "epoch": epoch,
                 },
                 checkpoint,

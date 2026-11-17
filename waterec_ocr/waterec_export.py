@@ -255,6 +255,8 @@ def _validate_checkpoint_config(config, actual):
     for key in ("task", "variant", "tokens", "max_label_length", "max_decode_steps"):
         if key in config and key in actual and config[key] != actual[key]:
             raise ValueError(f"Configuration {key} does not match checkpoint metadata")
+    if 'additional_characters' in config and config['additional_characters'] != actual.get('additional_characters', []):
+        raise ValueError('Requested ordered alphabet differs from checkpoint metadata')
     normalization = actual.get(
         "normalization",
         "upper_no_whitespace" if actual.get("task", "plate") == "plate" else "none",
@@ -373,6 +375,8 @@ def export_onnx(config, checkpoint=None):
         "fusion_workaround": "Post-RoPE q/k output barriers, two reused physical buffers across sequential encoder blocks",
         "batch32": "not supported by this static batch-one deployment",
     }
+    from .waterec_charset import metadata as alphabet_metadata
+    metadata.update(alphabet_metadata(model))
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     frequency = 1 / (model.encoder.rope_theta ** (torch.arange(0, 64, 4).float() / 64))
     angles = torch.arange(metadata["max_tokens"]).float()[:, None] * frequency

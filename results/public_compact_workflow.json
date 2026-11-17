@@ -129,5 +129,152 @@
       "completed_artifact_audit_sha256": "5dae21315aae5b82c0c33b99352e4ac941197d9f0da5466a22924ac21fffb9d5",
       "partial_decoder_checkpoint_sha256": "6595f6c833ed62fae3103f4367d512195cff635c83aba05d079fb990728572e1"
     }
+  },
+  "fixed_capacity_batch_qualification": {
+    "date": "2026-11-17",
+    "hardware": "RTX 5090; no edge-device qualification",
+    "parameters": 17913953,
+    "input": "Aspect-preserved budget2048; typical128x256 pixels; keep512 after6 encoder blocks",
+    "deployment_family": "waterec_compact_batch",
+    "alphabet_scope": "Original printable alphabet with optionalSPACE; extendedUnicode batching explicitly unsupported",
+    "quality_report206": {
+      "raw_correct": 161,
+      "numeric_correct": 187,
+      "n": 206,
+      "AI_reviewed_numeric_correct": 132,
+      "AI_reviewed_subset_n": 144,
+      "AI_human_certified": false,
+      "scope": "Previously examined post-development206; AI144 is a subset of this206, distinct from internalselectionDEV144. All capacities/policies matched the same native raw predictions."
+    },
+    "allocation_policy": "Reused QK barriers and shared execution workspace",
+    "protocol": "Five warm complete-batch calls, then three ordered206-image passes in a fresh process per scope/profile/policy. RGB starts decoded; encoded includes local file/PILdecode. Full-batch means/p95 omit partial tails; weighted per-real-image time and throughput include every timed call. Memory sampled before construction; not minimumRAM or parameter storage. Single trials, no statistical speedup claim.",
+    "profiles": [
+      {
+        "static_batch": 1,
+        "scopes": {
+          "RGB": {
+            "full_batch_mean_ms": 1.3897783786407767,
+            "full_batch_p95_ms": 1.4975903499999998,
+            "weighted_ms_per_real_image": 1.3897783786407767,
+            "real_images_per_second": 719.5391836344544,
+            "GPU_NVML_process_peak_bytes": 742391808,
+            "current_host_RSS_after_run_bytes": 602284032,
+            "OS_ru_maxrss_bytes": 598835200,
+            "real_timed_images": 618,
+            "physical_timed_slots": 618,
+            "partial_batch_count": 0
+          },
+          "encoded": {
+            "full_batch_mean_ms": 1.66209372815534,
+            "full_batch_p95_ms": 1.8090389999999998,
+            "weighted_ms_per_real_image": 1.66209372815534,
+            "real_images_per_second": 601.6507872331852,
+            "GPU_NVML_process_peak_bytes": 742391808,
+            "current_host_RSS_after_run_bytes": 566140928,
+            "OS_ru_maxrss_bytes": 562950144,
+            "real_timed_images": 618,
+            "physical_timed_slots": 618,
+            "partial_batch_count": 0
+          }
+        }
+      },
+      {
+        "static_batch": 2,
+        "scopes": {
+          "RGB": {
+            "full_batch_mean_ms": 2.333466550161812,
+            "full_batch_p95_ms": 2.4388844,
+            "weighted_ms_per_real_image": 1.166733275080906,
+            "real_images_per_second": 857.0939231425073,
+            "GPU_NVML_process_peak_bytes": 767557632,
+            "current_host_RSS_after_run_bytes": 602456064,
+            "OS_ru_maxrss_bytes": 598589440,
+            "real_timed_images": 618,
+            "physical_timed_slots": 618,
+            "partial_batch_count": 0
+          },
+          "encoded": {
+            "full_batch_mean_ms": 2.8038254789644013,
+            "full_batch_p95_ms": 2.9406379999999994,
+            "weighted_ms_per_real_image": 1.4019127394822006,
+            "real_images_per_second": 713.3111582746242,
+            "GPU_NVML_process_peak_bytes": 767557632,
+            "current_host_RSS_after_run_bytes": 567410688,
+            "OS_ru_maxrss_bytes": 562868224,
+            "real_timed_images": 618,
+            "physical_timed_slots": 618,
+            "partial_batch_count": 0
+          }
+        }
+      },
+      {
+        "static_batch": 4,
+        "scopes": {
+          "RGB": {
+            "full_batch_mean_ms": 3.5367709934640525,
+            "full_batch_p95_ms": 3.9021146,
+            "weighted_ms_per_real_image": 0.8926840048543689,
+            "real_images_per_second": 1120.2172264340486,
+            "GPU_NVML_process_peak_bytes": 815792128,
+            "current_host_RSS_after_run_bytes": 605249536,
+            "OS_ru_maxrss_bytes": 602284032,
+            "real_timed_images": 618,
+            "physical_timed_slots": 624,
+            "partial_batch_count": 3
+          },
+          "encoded": {
+            "full_batch_mean_ms": 4.5182970000000005,
+            "full_batch_p95_ms": 4.8919556,
+            "weighted_ms_per_real_image": 1.1376425453074432,
+            "real_images_per_second": 879.010726282001,
+            "GPU_NVML_process_peak_bytes": 815792128,
+            "current_host_RSS_after_run_bytes": 570728448,
+            "OS_ru_maxrss_bytes": 566870016,
+            "real_timed_images": 618,
+            "physical_timed_slots": 624,
+            "partial_batch_count": 3
+          }
+        }
+      },
+      {
+        "static_batch": 8,
+        "scopes": {
+          "RGB": {
+            "full_batch_mean_ms": 5.496700173333334,
+            "full_batch_p95_ms": 5.677599,
+            "weighted_ms_per_real_image": 0.6930208398058253,
+            "real_images_per_second": 1442.9580505547076,
+            "GPU_NVML_process_peak_bytes": 920649728,
+            "current_host_RSS_after_run_bytes": 609546240,
+            "OS_ru_maxrss_bytes": 605380608,
+            "real_timed_images": 618,
+            "physical_timed_slots": 624,
+            "partial_batch_count": 3
+          },
+          "encoded": {
+            "full_batch_mean_ms": 7.247032066666666,
+            "full_batch_p95_ms": 7.5406694,
+            "weighted_ms_per_real_image": 0.9119892233009707,
+            "real_images_per_second": 1096.5041849732302,
+            "GPU_NVML_process_peak_bytes": 920649728,
+            "current_host_RSS_after_run_bytes": 571330560,
+            "OS_ru_maxrss_bytes": 566091776,
+            "real_timed_images": 618,
+            "physical_timed_slots": 624,
+            "partial_batch_count": 3
+          }
+        }
+      }
+    ],
+    "known_external8": {
+      "amount_correct": 2,
+      "n": 8,
+      "actual_visible_currency_correct": 0,
+      "actual_visible_currency_n": 6,
+      "scope": "Repeated old exploratory licensed photos; no blind/population claim. p02 B1/B2=4 and B4/B8=PRICE, bothwrong; other7 raw strings agree. No universal native/batch identity."
+    },
+    "source_audit_sha256": "5970e6acd66a4b6c06e8abff37cd6cf89b318fe05f40457a44e6abd1ed209fdc",
+    "external8_audit_sha256": "fa142ba9a1ff2b5b094df1f3287628109d50717a4b19cf59bc9ebb36c0911f1f",
+    "combined_installed_console_audit_sha256": "c17f1a3280eaefaa607fad6c5f939d4a42aa752620947c320170db96fe21302b"
   }
 }

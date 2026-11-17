@@ -66,7 +66,7 @@ assert not any(n in sys.modules for n in ['torch','onnxruntime','tensorrt','pycu
     def test_TRT_budget_cap_rejects_before_backend_and_keeps_ONNX_metadata_flexible(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);image=root/'unused.png';image.write_bytes(b'not decoded by guard')
-            metadata={'family':'waterec_compact','schema':1,'compact_architecture':{'family':'waterec_compact','architecture':'rank_mlp_image_topk'},'static_batch':1,'max_tokens':4096,'memory_tokens':512,'max_len':25}
+            metadata={'family':'waterec_compact','schema':1,'compact_architecture':{'family':'waterec_compact','architecture':'rank_mlp_image_topk'},'static_batch':1,'max_tokens':4096,'memory_tokens':512,'max_len':25,'characters':['</s>','A','<s>','<pad>']}
             (root/'metadata.json').write_text(json.dumps(metadata))
             code="""import sys
 from waterec_ocr.waterec_compact_cli import main,_metadata

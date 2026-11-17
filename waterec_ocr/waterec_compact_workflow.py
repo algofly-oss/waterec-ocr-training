@@ -97,11 +97,16 @@ def _seed(seed, device):
 
 def _model_config(config):
     task = config.get('task', 'price')
-    return {'task': task, 'variant': config.get('variant', 'R' if task == 'price' else 'RS'),
+    result = {'task': task, 'variant': config.get('variant', 'R' if task == 'price' else 'RS'),
             'tokens': config.get('tokens', 512), 'include_space': config.get('include_space', task == 'price'),
             'max_label_length': config.get('max_label_length', 24),
             'max_decode_steps': config.get('max_decode_steps', 25),
             'normalization': config.get('normalization', 'none' if task == 'price' else 'upper_no_whitespace')}
+    if 'additional_characters' in config:
+        from .waterec_charset import validate_additions
+        additional=validate_additions(config['additional_characters'])
+        if additional:result['additional_characters']=additional
+    return result
 
 
 def _fingerprints(rows):
@@ -171,7 +176,10 @@ def _teacher(config, model_config, fit, output):
     mode = 'provided' if checkpoint else config.get('teacher_mode', 'finetune')
     if mode == 'provided':
         checkpoint = Path(checkpoint).expanduser().resolve()
-        teacher = create_native(model_config, checkpoint=checkpoint, pretrained=False)
+        try:
+            teacher = create_native(model_config, checkpoint=checkpoint, pretrained=False)
+        except ValueError as error:
+            raise ValueError('Provided teacher checkpoint/config/ordered alphabet mismatch. Use automatic matching teacher finetuning (teacher_mode=finetune without teacher_checkpoint), or provide an explicitly migrated matching checkpoint. '+str(error)) from error
     elif mode == 'finetune':
         from .waterec_training import train as train_standard
         teacher_folder = output / 'standard_teacher'
@@ -190,14 +198,22 @@ def _teacher(config, model_config, fit, output):
                   synthetic_plate_count=0, refit_all_training=True)
         train_standard(tc, resume=False)
         checkpoint = teacher_folder / 'full_fit/model.pt'
-        teacher = create_native(model_config, checkpoint=checkpoint, pretrained=False)
+        try:
+            teacher = create_native(model_config, checkpoint=checkpoint, pretrained=False)
+        except ValueError as error:
+            raise ValueError('Provided teacher checkpoint/config/ordered alphabet mismatch. Use automatic matching teacher finetuning (teacher_mode=finetune without teacher_checkpoint), or provide an explicitly migrated matching checkpoint. '+str(error)) from error
     elif mode == 'upstream' and config.get('allow_upstream_teacher') is True:
         tc = dict(model_config, pretrained_dir=config.get('pretrained_dir', Path('weights/waterec').resolve()))
         teacher = create_native(tc, pretrained=True)
     else:
         raise ValueError('Use a task teacher, auto finetune, or explicit allow_upstream_teacher=True')
-    return freeze_teacher(teacher), {'mode': mode, 'checkpoint_sha256': _sha(checkpoint) if checkpoint else None,
-                                    'upstream_without_task_finetuning': mode == 'upstream'}
+    binding = {'mode': mode, 'checkpoint_sha256': _sha(checkpoint) if checkpoint else None,
+               'upstream_without_task_finetuning': mode == 'upstream'}
+    if model_config.get('additional_characters'):
+        from .waterec_charset import metadata, vocabulary_hash
+        binding.update(teacher_state_sha256=_state(teacher), ordered_characters=list(teacher.characters),
+                       vocabulary_sha256=vocabulary_hash(teacher.characters), alphabet_metadata=metadata(teacher))
+    return freeze_teacher(teacher), binding
 
 
 def _targets(teacher, images, tokens, microbatch, include_importance):
@@ -378,6 +394,8 @@ def train_compact(config):
     sources = {name: _sha(package / name) for name in
                ['waterec_compact_models.py', 'waterec_compact_training.py', 'waterec_compact_workflow.py',
                 'waterec_models.py', 'waterec_training.py', 'data_io.py', 'data.py', 'metrics.py', 'waterec_synthetic.py', '_vendor/waterec/encoder.py', '_vendor/waterec/decoder.py', '_vendor/waterec/characters.txt']}
+    if mc.get('additional_characters'):
+        sources['waterec_charset.py'] = _sha(package / 'waterec_charset.py')
     _atomic_json(output / 'run_protocol.json', {'schema': 1, 'config': _safe(config), 'model': mc,
                                                'sources': sources, 'input_manifest_sha256': _sha(output / 'inputs.json'),
                                                'stages': stages, 'loss': 'CE+.5*T²KL(T2) token mean; joint+.1 imageKL image mean',

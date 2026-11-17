@@ -9,6 +9,8 @@ import hashlib,json
 
 def build_compact(deployment):
     folder=Path(deployment);m=json.loads((folder/'metadata.json').read_text())
+    from .waterec_charset import validate_deployment
+    validate_deployment(m)
     if m.get('family')!='waterec_compact' or m.get('static_batch')!=1 or m['max_tokens']<64 or not 1<=m['memory_tokens']<=m['max_tokens']:raise ValueError('Expected compact static B1 assets')
     if type(m.get('max_tokens')) is not int or not 64<=m['max_tokens']<=2048:raise ValueError('Compact FP16 TensorRT budget must be64..2048; native/CPU ONNX budgets are separate')
     import tensorrt as trt

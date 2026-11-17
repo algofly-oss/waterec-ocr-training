@@ -49,8 +49,14 @@ of validation/test leakage are the caller's responsibility; a compatible state
 dictionary cannot establish those facts. To deliberately skip task fine-tuning,
 use `teacher_mode: upstream` and `allow_upstream_teacher: true`.
 
-The native alphabet is the original printable character set, EOS/BOS/PAD and the
-configured SPACE extension. Unsupported characters, oversized labels or missing
+The default alphabet is the original printable character set, EOS/BOS/PAD and the
+configured SPACE extension. An optional ordered `additional_characters` list
+appends NFC codepoints, for example `["€", "£", "¥", "₹"]`. Omit the key or
+use `[]` to retain the original alphabet and checkpoint format. New rows use
+mean initialization and require training; they do not provide zero-shot
+recognition or preserve previous predictions automatically. Extended checkpoints
+and deployment assets carry an ordered alphabet/hash and explicit EOS/BOS/PAD
+metadata. A matching extended teacher is required for compact distillation. Unsupported characters, oversized labels or missing
 EOS alignment are rejected, never truncated or transliterated. This is not a
 universal multilingual reader.
 
@@ -108,8 +114,8 @@ python -m waterec_ocr.waterec_compact_cli build \
 ```
 
 Use an image that exists in your dataset; the notebook selects one rather than
-assuming its name. Native lists may batch, but the current ONNX/TensorRT graphs
-are fixed to the exported budget and **static batch 1**. Changing native training
+assuming its name. Native lists may batch. The default export remains fixed to
+the exported budget and **static batch 1**; its existing commands are unchanged. Changing native training
 resolution does not dynamically resize an existing engine. Build and qualify
 new target engines for each intended profile. Exporting a profile does not prove
 accuracy or GPU behavior at a different resolution. Native budgets are configurable above 64 subject to resources; that does not
@@ -124,6 +130,73 @@ images matched CPU outputs. This is functional proof only: it cannot inherit the
 trained 2048 profile’s accuracy or resource measurements.
 NVCC and a C compiler are required by GPU preprocessing/kernel setup. There is no
 Jetson/edge-device or rotation qualification for this compact checkpoint.
+
+## Optional fixed-capacity batching
+
+For an **ASCII** compact checkpoint trained with budget 2048 and target keep
+512, export a separate fixed-capacity deployment. This does not change training:
+
+```bash
+waterec-compact export --checkpoint artifacts/compact_price/model.pt \
+  --deployment artifacts/compact_price/batch2 --static-batch 2
+waterec-compact infer --backend onnx --deployment artifacts/compact_price/batch2 \
+  --folder dataset_price/val --batch-size 2
+# Build on the intended NVIDIA/CUDA target, then qualify its outputs:
+waterec-compact build --deployment artifacts/compact_price/batch2
+waterec-compact benchmark --backend tensorrt \
+  --deployment artifacts/compact_price/batch2 --folder dataset_price/val \
+  --batch-size 2 --repeats 3 --predecoded
+```
+
+`--static-batch` accepts 1, 2, 4 or 8 and creates dedicated rowwise graphs and
+engines. Build/infer/evaluate/benchmark dispatch from the metadata family;
+`--batch-size` is the number of real images per call and must not exceed the
+fixed capacity. One batched encoder and cached decoder process the rows together.
+A partial tail duplicates the first real row to capacity and discards dummy
+outputs. Benchmark JSON reports physical slots, real-image throughput, full
+batch latency and partial batches separately. Batch latency is not single-image
+latency. These are fixed profiles, not a dynamic-batch or edge qualification.
+
+Extended Unicode checkpoints currently use the **original static B1 path**:
+omit `--static-batch` and keep `--batch-size 1`. Unicode fixed-batch export and
+metadata are rejected explicitly, including `--static-batch 1`; the available
+100-class B1 proof does not qualify Unicode B2/B4/B8. The 128-lane greedy kernel
+is an implementation limit, not evidence that every alphabet is qualified.
+
+The existing 206-image qualification is bounded to that cohort. On a separate,
+previously examined eight-photo probe, B1/B2 output `4` for p02 while B4/B8 output
+`PRICE`; both are wrong under the frozen primary-price policy. Other seven
+outputs agree, and order/policy changes agree within each capacity. The result
+remains 2/8 strict amounts and 0/6 actual visible currencies. This is not
+universal native/batch equivalence or generic price-photo capability.
+
+### Measured fixed-capacity profiles
+
+RTX 5090, the same 17,913,953-parameter checkpoint, aspect-preserved budget
+2048 (typically 128×256 pixels), keeping 512 tokens after six blocks. These
+are the explicit `--static-batch` profiles, using reused barrier allocations.
+
+| Capacity | RGB full-batch ms | Encoded full-batch ms | RGB real images/s | GPU MiB | Host RSS MiB, RGB / encoded |
+|---|---:|---:|---:|---:|---:|
+| 1 | 1.390 | 1.662 | 719.5 | 708 | 574.4 / 539.9 |
+| 2 | 2.333 | 2.804 | 857.1 | 732 | 574.5 / 541.1 |
+| 4 | 3.537 | 4.518 | 1120.2 | 778 | 577.2 / 544.3 |
+| 8 | 5.497 | 7.247 | 1443.0 | 878 | 581.3 / 544.9 |
+
+All capacities reproduced the same 206 native outputs: **161/206 raw exact,
+187/206 numeric equivalent and 132/144 on the uncertified AI-reviewed subset**.
+This repeatedly examined cohort is post-development evidence, not blind accuracy.
+
+Each scope used a fresh process, five warm batch calls and three complete passes
+(618 real images). B4/B8 used 624 physical slots including padded tails. The
+full-batch means exclude partial calls; real-image throughput includes them.
+RGB starts with decoded images; encoded includes file/PIL decoding. Host RSS
+includes libraries, metadata and the decoded-image cache where applicable; GPU
+memory is the sampled process peak including the CUDA context. Neither value is
+a minimum RAM requirement or model-weight size. These are single measured trials,
+not controlled speedup estimates. Detailed timing, memory and evidence hashes are
+in [the result record](../results/public_compact_workflow.json). Unicode software
+fixtures do not establish new-symbol recognition accuracy or these resource costs.
 
 ## Qualified checkpoint versus a newly trained model
 

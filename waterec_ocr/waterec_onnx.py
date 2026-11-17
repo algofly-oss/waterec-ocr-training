@@ -9,6 +9,8 @@ class ONNXRecognizer:
     def __init__(self, deployment):
         folder = Path(deployment)
         self.meta = json.loads((folder / 'metadata.json').read_text())
+        from .waterec_charset import validate_deployment
+        validate_deployment(self.meta)
         m = self.meta
         if m.get('family') != 'waterec' or m.get('static_batch') != 1 or type(m.get('max_tokens')) is not int or m['max_tokens'] < 64:
             raise ValueError('Expected static B1 WATE cached deployment metadata')

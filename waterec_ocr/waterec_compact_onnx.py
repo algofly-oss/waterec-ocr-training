@@ -9,6 +9,8 @@ from .waterec_preprocessing import pack_image
 class ONNXRecognizer:
     def __init__(self,deployment):
         folder=Path(deployment);self.meta=json.loads((folder/'metadata.json').read_text());m=self.meta
+        from .waterec_charset import validate_deployment
+        validate_deployment(m)
         if m.get('family')!='waterec_compact' or m.get('schema')!=1 or m.get('static_batch')!=1 or not 1<=m['memory_tokens']<=m['max_tokens'] or m['max_len']!=25:raise ValueError('Unsupported compact metadata')
         for n,h in m['graph_sha256'].items():
             if hashlib.sha256((folder/n).read_bytes()).hexdigest()!=h:raise ValueError('Graph hash mismatch: '+n)

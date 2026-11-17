@@ -8,6 +8,7 @@ import copy
 from collections.abc import Mapping
 from pathlib import Path
 
+from .waterec_charset import metadata as alphabet_metadata
 import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
@@ -156,14 +157,15 @@ class CompactWATERec(nn.Module):
         return self.native.decoder.forward_test(memory)
 
     def architecture_metadata(self):
-        return {'family': 'waterec_compact', 'schema': 1,
+        return {'family': 'waterec_compact', 'schema': 2 if self.config.get('additional_characters') else 1,
                 'architecture': 'rank_mlp_image_topk', 'rank': self.rank,
                 'after_blocks': self.after_blocks, 'target_keep': self.target_keep,
                 'config': dict(self.config), 'characters': list(self.native.characters)}
 
     def checkpoint_payload(self):
         return {'compact_architecture': self.architecture_metadata(),
-                'state_dict': self.state_dict()}
+                'state_dict': self.state_dict(),
+                **alphabet_metadata(self.native)}
 
 
 def load_compact_checkpoint(checkpoint, device='cpu'):
@@ -172,11 +174,26 @@ def load_compact_checkpoint(checkpoint, device='cpu'):
     if not isinstance(payload, Mapping) or not isinstance(payload.get('compact_architecture'), dict):
         raise ValueError('Explicit compact architecture metadata is required')
     meta = payload['compact_architecture']
-    if meta.get('family') != 'waterec_compact' or meta.get('schema') != 1 or meta.get('architecture') != 'rank_mlp_image_topk':
+    if meta.get('family') != 'waterec_compact' or meta.get('schema') not in (1, 2) or meta.get('architecture') != 'rank_mlp_image_topk':
         raise ValueError('Unsupported compact checkpoint architecture')
     model = CompactWATERec(meta['config'], rank=meta['rank'],
                           after_blocks=meta['after_blocks'], target_keep=meta['target_keep'])
+    from .waterec_charset import restore_metadata
+    if bool(meta['config'].get('additional_characters')) != (meta['schema'] == 2):
+        raise ValueError('Extended alphabet requires architecture schema2; legacy requires schema1')
+    restore_metadata(model.native, payload)
     if model.architecture_metadata() != meta:
         raise ValueError('Compact architecture/character metadata mismatch')
     model.load_state_dict(payload['state_dict'], strict=True)
     return model.eval().to(device)
+
+
+def migrate_compact_checkpoint(checkpoint, additional_characters):
+    """Explicit alphabet migration, never infer labels from state tensor shapes."""
+    from .waterec_charset import extend_characters,vocabulary_hash
+    from .waterec_models import sha256
+    model=load_compact_checkpoint(checkpoint)
+    provenance={'source':'explicit_task_checkpoint_migration','source_checkpoint_sha256':sha256(checkpoint),'source_vocabulary_sha256':vocabulary_hash(model.native.characters),'optimizer':'fresh; optimizer state not migrated'}
+    extend_characters(model.native,additional_characters,provenance)
+    model.config=dict(model.native.config)
+    return model,model.checkpoint_payload()

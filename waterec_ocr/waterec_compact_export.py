@@ -71,6 +71,7 @@ def export_compact(checkpoint,output):
     """Strict typed checkpoint -> separate B1 encoder/new decoder/metadata assets."""
     import onnx
     model=load_compact_checkpoint(checkpoint,'cpu').eval();budget=model.config['tokens'];keep=model.keep_tokens
+    if model.native.decoder.out_channels-2>128:raise ValueError('Current cached TensorRT greedy supports <=128 output classes')
     if budget<64 or budget>=16777216:raise ValueError('Configured budget must be64..16777215 for exact raster float keys')
     if model.native.decoder.decoder.norm is not None or any(l.norm_first for l in model.native.decoder.decoder.layers):raise ValueError('Unsupported decoder normalization')
     output=Path(output);output.mkdir(parents=True,exist_ok=True)
@@ -87,6 +88,8 @@ def export_compact(checkpoint,output):
     if len(barriers)!=24:raise RuntimeError('Expected24 post-real-RoPE Q/K barriers')
     onnx.checker.check_model(onnx.load(output/'decoder_cached_step.onnx'))
     meta={'family':'waterec_compact','schema':1,'graph_type':'rank_mlp_topk_cached_greedy','compact_architecture':model.architecture_metadata(),'static_batch':1,'max_tokens':budget,'memory_tokens':keep,'min_tokens':64,'min_actual_tokens':1,'patch':4,'encoder_layers':12,'decoder_layers':layers,'decoder_heads':heads,'cache_head_dim':dim,'max_len':25,'characters':model.native.characters,'bos':model.native.decoder.bos,'eos':model.native.decoder.eos,'task':model.config['task'],'variant':model.config['variant'],'QK_barriers':barriers,'normalization':model.config.get('normalization','none'),'parameters':sum(p.numel() for p in model.parameters()),'qualification':'CPU export only; target-device parity required','precision_policy':'FP16 allowed; normalization/softmax/scorer prefer FP32, not internal accumulator guarantee'}
+    from .waterec_charset import metadata
+    meta.update(metadata(model.native))
     if isinstance(checkpoint,(str,Path)):meta['checkpoint_sha256']=hashlib.sha256(Path(checkpoint).read_bytes()).hexdigest()
     frequency=1/(model.native.encoder.rope_theta**(torch.arange(0,64,4).float()/64));angles=torch.arange(budget).float()[:,None]*frequency;np.savez(output/'rope.npz',cosine=angles.cos().numpy(),sine=angles.sin().numpy())
     meta['graph_sha256']={n:hashlib.sha256((output/n).read_bytes()).hexdigest() for n in ['encoder_cross_kv.onnx','decoder_cached_step.onnx']};(output/'metadata.json').write_text(json.dumps(meta,indent=2)+'\n');return output
