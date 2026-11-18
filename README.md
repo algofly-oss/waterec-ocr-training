@@ -28,9 +28,11 @@ Expected output is `107.25 DH`. On real tags, cents can be raised or smaller, a 
 
 ![Bundled WATERec plate example](dummy_data/plates/val/000.png)
 
-Expected output is `AB100CD223`. On real crops the reader must keep the character order across unfamiliar fonts, stacked rows, glare, and blur. [Open a real benchmark plate photograph](https://github.com/openalpr/benchmarks/blob/9790ed20d475be1e940a7e2a3f492a97c2ebed9b/endtoend/br/AYO9034.jpg)
+Expected output is `AB100CD223`. On real crops the reader must keep the character order across unfamiliar fonts, stacked rows, glare, and blur.
 
-![Real benchmark plate photograph](https://raw.githubusercontent.com/openalpr/benchmarks/9790ed20d475be1e940a7e2a3f492a97c2ebed9b/endtoend/br/AYO9034.jpg)
+![Plate crop used for OCR evaluation](docs/images/openalpr-ayo9034-crop.png)
+
+The international evaluation uses this crop from the OpenALPR benchmark. The recognizer receives the cropped plate and the expected text is `AYO9034`. [Source photograph](https://github.com/openalpr/benchmarks/blob/9790ed20d475be1e940a7e2a3f492a97c2ebed9b/endtoend/br/AYO9034.jpg)
 
 | Model | Params | Input | Reviewed unseen | Local validation | Latency² | GPU² |
 |---|---:|---|---:|---:|---:|---:|
