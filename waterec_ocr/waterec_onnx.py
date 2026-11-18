@@ -14,8 +14,6 @@ class ONNXRecognizer:
         m = self.meta
         if m.get('family') != 'waterec' or m.get('static_batch') != 1 or type(m.get('max_tokens')) is not int or m['max_tokens'] < 64:
             raise ValueError('Expected static B1 WATE cached deployment metadata')
-        if m.get('orientation'):
-            raise ValueError('ONNX backend uses standard AR graphs; orientation is TensorRT-only')
         import onnxruntime as ort
         options = ort.SessionOptions()
         options.intra_op_num_threads = 2
@@ -30,8 +28,20 @@ class ONNXRecognizer:
         if self.closed:
             raise RuntimeError('Recognizer is closed')
         m = self.meta
-        packed, _ = pack_image(image, self.rope, m['max_tokens'])
-        cross_k, cross_v = self.encoder.run(None, packed)
+        orientation = m.get('orientation')
+        def encode(crop):
+            packed, grid = pack_image(crop, self.rope, m['max_tokens'])
+            if orientation:
+                from .waterec_orientation import spatial_weights
+                packed[orientation['pool_input']] = spatial_weights(*grid, m['max_tokens'])
+            return packed, self.encoder.run(None, packed)
+        packed, outputs = encode(image)
+        if orientation and orientation.get('default_enabled'):
+            from .waterec_orientation import _rotate
+            angle = int(outputs[2].argmax())
+            if angle:
+                packed, outputs = encode(_rotate(image, (-angle) % 4))
+        cross_k, cross_v = outputs[:2]
         cache = (m['decoder_layers'], 1, m['decoder_heads'], m['max_len'], m['cache_head_dim'])
         past_k = np.zeros(cache, np.float32)
         past_v = np.zeros_like(past_k)

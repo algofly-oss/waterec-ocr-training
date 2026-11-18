@@ -435,6 +435,10 @@ def export_onnx(config, checkpoint=None):
             "present_v": {1: "batch"},
         },
     )
+    embedded = torch.load(checkpoint, map_location="cpu", weights_only=True).get("orientation_head")
+    if embedded is not None:
+        from .waterec_orientation import export_orientation
+        export_orientation(output, None, output, embedded=embedded)
     return output
 
 

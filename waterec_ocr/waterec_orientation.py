@@ -182,7 +182,28 @@ def train_head(
     return output / "orientation.pt"
 
 
-def export_orientation(deployment, head_checkpoint, output):
+def train_embedded_orientation(config, checkpoint, fit, held):
+    """Attach the selected classifier to the deployed OCR checkpoint atomically."""
+    import tempfile
+    import torch
+    checkpoint = Path(checkpoint)
+    payload = torch.load(checkpoint, map_location="cpu", weights_only=True)
+    if payload.get("orientation_head") is not None:
+        return
+    head = train_head(checkpoint, fit, held, config["output_dir"] / "orientation",
+                      epochs=config.get("orientation_epochs", 30),
+                      batch_size=config["batch_size"], device=config["device"])
+    payload["orientation_head"] = head.read_bytes()
+    with tempfile.NamedTemporaryFile(dir=checkpoint.parent, delete=False) as temp:
+        path = Path(temp.name)
+    try:
+        torch.save(payload, path)
+        path.replace(checkpoint)
+    finally:
+        path.unlink(missing_ok=True)
+
+
+def export_orientation(deployment, head_checkpoint, output, *, embedded=None):
     """Clone portable deployment and append head to the encoder graph.
 
     Requires a head fitted for the exact deployment checkpoint SHA. Engines are
@@ -194,11 +215,13 @@ def export_orientation(deployment, head_checkpoint, output):
     import onnx
 
     deployment, output = Path(deployment), Path(output)
-    if deployment.resolve() == output.resolve():
+    if embedded is None and deployment.resolve() == output.resolve():
         raise ValueError("Use a separate orientation deployment folder")
     metadata = json.loads((deployment / "metadata.json").read_text())
-    saved = torch.load(head_checkpoint, map_location="cpu", weights_only=True)
-    if saved["encoder_checkpoint_sha256"] != metadata["checkpoint_sha256"]:
+    import io
+    head_bytes = embedded if embedded is not None else Path(head_checkpoint).read_bytes()
+    saved = torch.load(io.BytesIO(head_bytes), map_location="cpu", weights_only=True)
+    if embedded is None and saved["encoder_checkpoint_sha256"] != metadata["checkpoint_sha256"]:
         raise ValueError("Orientation head and OCR encoder checkpoint SHA differ")
     head = create_head()
     head.load_state_dict(saved["state_dict"], strict=True)
@@ -243,14 +266,14 @@ def export_orientation(deployment, head_checkpoint, output):
     graph.graph.output.extend(h.graph.output)
     onnx.checker.check_model(graph)
     onnx.save(graph, output / "encoder_cross_kv.onnx")
-    for name in ["decoder_cached_step.onnx", "rope.npz"]:
+    for name in ([] if embedded is not None else ["decoder_cached_step.onnx", "rope.npz"]):
         shutil.copy2(deployment / name, output / name)
     metadata["orientation"] = {
-        "default_enabled": False,
+        "default_enabled": embedded is not None,
         "pool_input": "orientation/pool_weights",
         "logits_output": "orientation/orientation_logits",
         "classes_clockwise_degrees": [0, 90, 180, 270],
-        "head_sha256": hashlib.sha256(Path(head_checkpoint).read_bytes()).hexdigest(),
+        "head_sha256": hashlib.sha256(head_bytes).hexdigest(),
         "head_parameters": 250244,
         "note": "Optional; may harm upright crops. Corrections require second encoder pass.",
     }

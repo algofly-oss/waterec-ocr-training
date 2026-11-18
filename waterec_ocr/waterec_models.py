@@ -251,10 +251,29 @@ class TorchRecognizer:
             raise FileNotFoundError(f'WATERec checkpoint not found: {checkpoint}; run training first')
         self.model = create_native(config, checkpoint).float().eval().to(config.get('device', 'cpu'))
         self.device = next(self.model.parameters()).device
+        self.orientation_head = None
+        embedded = _payload(checkpoint).get("orientation_head")
+        if embedded is not None:
+            import io
+            from .waterec_orientation import create_head
+            self.orientation_head = create_head().eval().to(self.device)
+            saved = torch.load(io.BytesIO(embedded), map_location="cpu", weights_only=True)
+            self.orientation_head.load_state_dict(saved["state_dict"])
 
     @torch.inference_mode()
     def infer(self, images):
         images = list(images)
+        if self.orientation_head is not None:
+            from .waterec_orientation import spatial_weights, _rotate
+            corrected = []
+            for image in images:
+                x = self.model.preprocess(image).to(self.device)
+                memory, _ = self.model.encoder([x])
+                weights = spatial_weights(x.shape[-2]//4, x.shape[-1]//4, memory.shape[1])
+                pooled = torch.from_numpy(weights).to(self.device) @ memory
+                angle = int(self.orientation_head(pooled.flatten(1)).argmax())
+                corrected.append(_rotate(image, (-angle) % 4))
+            images = corrected
         result = []
         batch = int(self.config.get('inference_batch_size', self.config.get('batch_size', 16)))
         for start in range(0, len(images), batch):

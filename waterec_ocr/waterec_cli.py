@@ -45,6 +45,16 @@ def make_recognizer(config, backend, checkpoint=None):
         raise ValueError("--speculative requires --backend tensorrt")
     if config.get("gpu_preprocess", False) and backend != "tensorrt":
         raise ValueError("--gpu-preprocess requires --backend tensorrt")
+    if backend == "tensorrt" and not orientation:
+        folder, metadata = deployment_metadata(config)
+        if (metadata.get("orientation") or {}).get("default_enabled"):
+            from .waterec_orientation import OrientationRecognizer
+            verify_requested_checkpoint(metadata, checkpoint)
+            return OrientationRecognizer(folder, enabled=True,
+                gpu_preprocess=config.get("gpu_preprocess", False),
+                speculative_deployment=speculative_directory(config) if config.get("speculative") else None,
+                speculative_shared_workspace=config.get("speculative_shared_workspace", True),
+                upscale_small_plates=upscale, upscale_very_small_plates=upscale_tiny)
     if orientation or upscale or upscale_tiny:
         if backend != "tensorrt":
             raise ValueError("--orientation currently requires --backend tensorrt")

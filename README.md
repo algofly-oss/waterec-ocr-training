@@ -175,6 +175,17 @@ Related repositories: [PARSeq Base / Tiny / Fast Tiny](https://github.com/algofl
 
 For the measured price accuracy/latency/memory tradeoff at 512/1024/2048 patch budgets, see the [lower-resolution reference table](docs/experiments.md#price-resolution-measured-lower-budget-alternatives) and [scoped aggregate metadata](results/resolution_reference.json). The checkpoints have different training recipes; GPU-preprocessing timings do not automatically describe the default runtime.
 
+## Train with optional plate orientation correction
+
+Set `TRAIN_ORIENTATION = True` in [the training notebook](notebooks/2_model_training.ipynb), or set `train_orientation: true` in the training YAML. Use upright plate crops with their usual text labels and the 512-patch profile. Training creates quarter-turn examples automatically and fits a 250,244-parameter classifier on the frozen OCR encoder. Its weights are saved inside the final OCR checkpoint. The standard export, build, and inference notebooks detect the head automatically. Baseline checkpoints use ordinary OCR.
+
+| Reviewed plate crops | As supplied | Left 90° | Right 90° | Upside down | Mean latency as supplied / upside down |
+|---|---:|---:|---:|---:|---:|
+| WATERec speculative | 879/984 (89.33%) | 336/984 (34.15%) | 337/984 (34.25%) | 217/984 (22.05%) | 1.14 / 1.34 ms |
+| WATERec speculative + orientation | 878/984 (89.23%) | 881/984 (89.53%) | 880/984 (89.43%) | 880/984 (89.43%) | 1.26 / 1.94 ms |
+
+These are literal full-string matches on the same images at each angle. Timing starts from decoded RGB at batch one on an RTX 5090 with the speculative decoder. The default notebook uses greedy decoding. A predicted turn triggers a second encoder pass.
+
 ## Model choices
 
 | Choice | What changes | Starting configuration |

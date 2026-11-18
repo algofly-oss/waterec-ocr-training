@@ -5,6 +5,7 @@ pretrained_dir: weights/waterec
 task: plate
 variant: RS
 tokens: 512
+train_orientation: false  # Fit and embed a four-way head after OCR training.
 max_label_length: 24
 max_decode_steps: 25
 synthetic_plate_count: 0

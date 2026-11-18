@@ -313,6 +313,9 @@ class TensorRTRecognizer:
     def preprocess(self, image):
         from .waterec_preprocessing import pack_image
         data, self._last_grid = pack_image(image, self.rope, self.max_tokens)
+        if self.meta.get("orientation"):
+            from .waterec_orientation import spatial_weights
+            data[self.meta["orientation"]["pool_input"]] = spatial_weights(*self._last_grid, self.max_tokens)
         return data
 
     def encode(self, image):
@@ -372,7 +375,21 @@ class TensorRTRecognizer:
 
     def infer(self, images):
         """Return raw decoded text; each supplied image runs individually at batch1."""
-        return [self.decode_encoded(self.encode(image)) for image in images]
+        orientation = self.meta.get("orientation") or {}
+        if not orientation.get("default_enabled"):
+            return [self.decode_encoded(self.encode(image)) for image in images]
+        from .waterec_orientation import _rotate
+        results = []
+        for image in images:
+            prepared = self.encode(image)
+            logits = np.empty((1, 4), np.float32)
+            self.stream.synchronize()
+            cuda.memcpy_dtoh(logits, self.encoder.buffers[orientation["logits_output"]])
+            turn = (-int(logits.argmax())) % 4
+            if turn:
+                prepared = self.encode(_rotate(image, turn))
+            results.append(self.decode_encoded(prepared))
+        return results
 
     def close(self):
         if self._closed:

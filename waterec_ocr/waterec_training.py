@@ -503,4 +503,8 @@ def train(config, resume=True):
                 selection["selected_epoch"],
                 resume,
             )
+    if config.get("train_orientation"):
+        from .waterec_models import default_checkpoint
+        from .waterec_orientation import train_embedded_orientation
+        train_embedded_orientation(config, default_checkpoint(config), fit, held)
     return selection
