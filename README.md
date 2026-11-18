@@ -16,11 +16,11 @@ Expected output is `107.25 DH`. On real tags, cents can be raised or smaller, a 
 
 | Model | Params | Input | Corrected tags | Public photos | Latency¹ | GPU¹ |
 |---|---:|---|---:|---:|---:|---:|
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank-192 | 20.84M | ≤896 patches | **163/206** | **49/71** | 1.17 ms | 724 MiB |
-| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Medium | 15.58M | 128×320 | **163/206** | 6/71 | 0.77 ms | 656 MiB |
-| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Small | 3.04M | 128×320 | 160/206 | 13/71 | **0.60 ms** | 652 MiB |
-| [Florence-2](https://github.com/algofly-oss/florence2-ocr-training) Base | 231.41M | 384×384 | 157/206 | 3/71 | 4.95 ms | 1,452 MiB |
-| [PARSeq](https://github.com/algofly-oss/parseq-ocr-training) Fast Tiny | 6.05M | 48×192 | 44/206 | 2/71 | 0.89 ms | 688 MiB |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank-192 | 20.84M | ≤896 patches | **163/206 (79.13%)** | **49/71 (69.01%)** | 1.17 ms | 724 MiB |
+| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Medium | 15.58M | 128×320 | **163/206 (79.13%)** | 6/71 (8.45%) | 0.77 ms | 656 MiB |
+| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Small | 3.04M | 128×320 | 160/206 (77.67%) | 13/71 (18.31%) | **0.60 ms** | 652 MiB |
+| [Florence-2](https://github.com/algofly-oss/florence2-ocr-training) Base | 231.41M | 384×384 | 157/206 (76.21%) | 3/71 (4.23%) | 4.95 ms | 1,452 MiB |
+| [PARSeq](https://github.com/algofly-oss/parseq-ocr-training) Fast Tiny | 6.05M | 48×192 | 44/206 (21.36%) | 2/71 (2.82%) | 0.89 ms | 688 MiB |
 
 ¹ Mean from decoded RGB on the corrected price crops, RTX 5090, batch one. GPU memory is the sampled process peak. Ranking prioritizes corrected exact matches, then public exact matches. The corrected set includes 68 provisional labels.
 
@@ -36,11 +36,11 @@ The international evaluation uses this crop from the OpenALPR benchmark. The rec
 
 | Model | Params | Input | Reviewed unseen | Local validation | Latency² | GPU² |
 |---|---:|---|---:|---:|---:|---:|
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) speculative | 27.51M | ≤512 patches | **879/984** | **2,476/2,693** | 1.07 ms | 700 MiB |
-| [Florence-2](https://github.com/algofly-oss/florence2-ocr-training) Base | 231.41M | 224×224 | 857/984 | 2,381/2,693 | 4.88 ms | 1,130 MiB |
-| [PARSeq](https://github.com/algofly-oss/parseq-ocr-training) Fast Tiny | 6.05M | 48×192 | 715/984 | 2,377/2,693 | 0.69 ms | 682 MiB |
-| [CCT-S](https://github.com/algofly-oss/cct-ocr-training) | 0.98M | 64×128 | 628/984 | 2,226/2,693 | 0.85 ms | 542 MiB |
-| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Medium | 15.58M | Height 48 | 626/984 | 2,339/2,693 | 0.76 ms | 650 MiB |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) speculative | 27.51M | ≤512 patches | **879/984 (89.33%)** | **2,476/2,693 (91.94%)** | 1.07 ms | 700 MiB |
+| [Florence-2](https://github.com/algofly-oss/florence2-ocr-training) Base | 231.41M | 224×224 | 857/984 (87.09%) | 2,381/2,693 (88.41%) | 4.88 ms | 1,130 MiB |
+| [PARSeq](https://github.com/algofly-oss/parseq-ocr-training) Fast Tiny | 6.05M | 48×192 | 715/984 (72.66%) | 2,377/2,693 (88.27%) | 0.69 ms | 682 MiB |
+| [CCT-S](https://github.com/algofly-oss/cct-ocr-training) | 0.98M | 64×128 | 628/984 (63.82%) | 2,226/2,693 (82.66%) | 0.85 ms | 542 MiB |
+| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Medium | 15.58M | Height 48 | 626/984 (63.62%) | 2,339/2,693 (86.85%) | 0.76 ms | 650 MiB |
 
 ² Mean from decoded RGB, RTX 5090, batch one. WATERec and Florence-2 timing used the 984 reviewed crops. Other timings come from separate workloads. Ranking uses reviewed unseen exact matches.
 
@@ -88,15 +88,15 @@ The three public photo cohorts contain 71 scorable references. Rows are ordered 
 
 | Model and TensorRT variant | Parameters | Input | Earlier | Confirmation | Fresh | Total exact | Tiled WebP mean | Tiled GPU peak |
 |---|---:|---|---:|---:|---:|---:|---:|---:|
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank 192 + paired-format head (diagnostic) | 20.84M | ≤896 patches | 23/31 | 15/23 | 11/17 | 49/71 (69.01%) | 2.95–5.36 ms | 702 MiB |
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) full + paired-format head (experimental) | 26.15M | ≤896 patches | 23/31 | 14/23 | 10/17 | 47/71 (66.20%) | 2.98–5.43 ms | 702 MiB |
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) full + formatting head (experimental) | 26.15M | ≤896 patches | 23/31 | 9/23 | 11/17 | 43/71 (60.56%) | 2.92–5.33 ms | 702 MiB |
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank 128 + formatting head (experimental) | 17.89M | ≤896 patches | 18/31 | 9/23 | 8/17 | 35/71 (49.30%) | 2.95–5.25 ms | 702 MiB |
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) full, photo-adapted | 26.12M | ≤896 patches | 18/31 | 5/23 | 5/17 | 28/71 (39.44%) | — | — |
-| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank 128, photo-adapted | 17.87M | ≤896 patches | 17/31 | 7/23 | 4/17 | 28/71 (39.44%) | — | — |
-| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Small, currency-adapted | 3.04M | 128×320 | 8/31 | 2/23 | 3/17 | 13/71 (18.31%) | — | — |
-| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Medium, currency-adapted | 15.58M | 128×320 | 3/31 | 0/23 | 3/17 | 6/71 (8.45%) | — | — |
-| [Florence-2](https://github.com/algofly-oss/florence2-ocr-training) Base, optimized | 231.41M | 384×384 | 3/31 | 0/23 | 0/17 | 3/71 (4.23%) | — | — |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank 192 + paired-format head (diagnostic) | 20.84M | ≤896 patches | 23/31 (74.19%) | 15/23 (65.22%) | 11/17 (64.71%) | 49/71 (69.01%) | 2.95–5.36 ms | 702 MiB |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) full + paired-format head (experimental) | 26.15M | ≤896 patches | 23/31 (74.19%) | 14/23 (60.87%) | 10/17 (58.82%) | 47/71 (66.20%) | 2.98–5.43 ms | 702 MiB |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) full + formatting head (experimental) | 26.15M | ≤896 patches | 23/31 (74.19%) | 9/23 (39.13%) | 11/17 (64.71%) | 43/71 (60.56%) | 2.92–5.33 ms | 702 MiB |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank 128 + formatting head (experimental) | 17.89M | ≤896 patches | 18/31 (58.06%) | 9/23 (39.13%) | 8/17 (47.06%) | 35/71 (49.30%) | 2.95–5.25 ms | 702 MiB |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) full, photo-adapted | 26.12M | ≤896 patches | 18/31 (58.06%) | 5/23 (21.74%) | 5/17 (29.41%) | 28/71 (39.44%) | — | — |
+| [WATERec](https://github.com/algofly-oss/waterec-ocr-training) rank 128, photo-adapted | 17.87M | ≤896 patches | 17/31 (54.84%) | 7/23 (30.43%) | 4/17 (23.53%) | 28/71 (39.44%) | — | — |
+| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Small, currency-adapted | 3.04M | 128×320 | 8/31 (25.81%) | 2/23 (8.70%) | 3/17 (17.65%) | 13/71 (18.31%) | — | — |
+| [PP-OCRv6](https://github.com/algofly-oss/ppocrv6-ocr-training) Medium, currency-adapted | 15.58M | 128×320 | 3/31 (9.68%) | 0/23 (0.00%) | 3/17 (17.65%) | 6/71 (8.45%) | — | — |
+| [Florence-2](https://github.com/algofly-oss/florence2-ocr-training) Base, optimized | 231.41M | 384×384 | 3/31 (9.68%) | 0/23 (0.00%) | 0/17 (0.00%) | 3/71 (4.23%) | — | — |
 
 The timing range spans the three cohort means from encoded bytes in RAM at batch one. The paired-format head reads the visible separator and currency from image features. The full paired model matched stock at 162/206 on corrected crops. The rank-192 diagnostic read 163/206. Its encoder engine was 23% smaller and averaged 1.174 ms from decoded crops versus 1.135 ms for the full paired model. Preparing lossless, model-sized BMPs at ingestion preserved all 71 predictions and ran in 1.07–1.13 ms at 698 MiB. The prepared-input timings exclude ingest conversion.
 
