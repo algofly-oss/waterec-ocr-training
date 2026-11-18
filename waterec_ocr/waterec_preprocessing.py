@@ -3,8 +3,18 @@ import math
 import numpy as np
 from PIL import Image
 
+def rgb_array_size(image):
+    if (image.dtype != np.uint8 or image.ndim != 3 or image.shape[2] != 3
+            or not image.shape[0] or not image.shape[1]):
+        raise ValueError("Expected a nonempty H×W×3 uint8 RGB array")
+    return image.shape[1], image.shape[0]
+
 def pack_image(image, rope, max_tokens):
-    image = image.convert('RGB')
+    if isinstance(image, np.ndarray):
+        rgb_array_size(image)
+        image = Image.fromarray(image)
+    elif image.mode != 'RGB':
+        image = image.convert('RGB')
     w, h = image.size
     area = w * h
     if area > max_tokens * 16:

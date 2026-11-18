@@ -6,16 +6,16 @@ This records trained experiments beyond the portable notebook options. A separat
 
 The latest fixed terminal keeps the same **17,913,953-parameter** architecture: aspect-preserved R 2048 input (typically 128×256), selection of 512 patches after six encoder blocks, six remaining blocks and two AR decoder layers. Both new engines were rebuilt; the old decoder was not reused.
 
-| Latest research model | Raw exact /206 | Numeric /206 | AI-reviewed numeric /144 | Mean normalized Levenshtein similarity | RGB / encoded mean ms | GPU / current host MiB |
-|---|---:|---:|---:|---:|---:|---:|
-| Token selection restart2, standalone public runtime v3 |161 (78.16%)|187 (90.78%)|132 (91.67%)|90.18%|1.356083 /1.620985|708 GPU;576.5 RGB /545.3 encoded host|
-| Token selection restart 2, earlier private runtime |161 (78.16%)|187 (90.78%)|132 (91.67%)|90.18%|1.362 /1.620|708 GPU; 581.1 RGB /549.7 encoded host|
+| Latest research model | Raw exact /206 | RGB / encoded mean ms | GPU / current host MiB |
+| --- | ---: | ---: | ---: |
+| Token selection restart2, standalone public runtime v3 | 161 (78.16%) | 1.356083 /1.620985 | 708 GPU;576.5 RGB /545.3 encoded host |
+| Token selection restart 2, earlier private runtime | 161 (78.16%) | 1.362 /1.620 | 708 GPU; 581.1 RGB /549.7 encoded host |
 
-Raw exact also checks currency, punctuation and spacing. **These metrics are different:** raw exact is 78.16%; 90.78% is numeric equivalence of the full price value, including its decimal fraction, and 90.18% is mean normalized Levenshtein similarity (CER 13.61%). AI 144 is an uncertified AI-assisted subset of 206, not human ground truth or internal DEV 144. Florence remains one AI-reviewed numeric case higher (133/144), so this is not noninferior on every accuracy metric.
+Literal exact checks the complete output including currency, punctuation, case and spacing. Historical checkpoint ancestry and selection policies differ from the current literal-only workflow; these old runs are not retroactively claimed to use that policy. The current corrected-reference144-image development cohort is separate from this historical206-image report.
 
 After the original full 820-image head stage (one epoch / 26 updates) and joint stage (four epochs / 208 updates), restart 2 used a fresh three-group AdamW optimizer for two prospectively fixed epochs / 104 updates / 1,640 exposures. All 820 images were TRAIN; no checkpoint was selected using the new 206 outputs. The 206 cohort had already been observed in research, so this is post-development evidence, not a blind test. Training remains image + expected text only.
 
-Compared with the original custom terminal, 16 raw strings change: six raw gains and four losses, three numeric gains and two losses, and two AI-reference gains and two losses. This is **not a lossless model update**. Runtime output parity is instead exact against the new terminal's own native output: 206 replay strings and 1,236 timed strings. The old intermediate 0.05 numeric failures remain failures. A separate through-EOS output-fidelity policy checks exact tokens/strings, sufficient 2E&lt; argmax-margin, pixels, masks, finite values and legal selection from the same GPU scores; it does not claim numerical, routing or calibration equivalence.
+Compared with the original custom terminal,16 strings change: six exact gains and four losses. This is not a lossless model update. Runtime parity is against the new terminal’s own output:206 replay strings and1,236 timed strings. Earlier strict0.05 arithmetic-tolerance failures remain failures. A separate through-EOS output-fidelity policy checks exact tokens/strings, margin bounds, pixels, masks, finite values and legal selection from the same GPU scores; it does not claim arithmetic, routing, calibration or universal equivalence.
 
 The fast path caches geometry uploads and retains the queued validator. Fault flags 1/2/4 must be rejected before text returns; standalone encode consumers must explicitly call `validate_encoded`. Five warmups and three complete 206-image passes per fresh RGB/encoded process produced the table's RTX 5090 static batch 1 results. Sampled GPU memory includes CUDA context. Current host RSS includes libraries/metadata and the RGB cache where applicable; OS high-water accounting is separate, not minimum RAM. No edge, batch or rotation qualification is inherited. Reference weights remain unbundled. The architecture is available through the separate experimental CLI and notebook 9; standard R/RS model options are unchanged. Demonstration training does not inherit this checkpoint’s accuracy.
 
@@ -27,20 +27,20 @@ The custom price reader has **17,913,953 parameters**. A recovered rank-128 WATE
 
 Training supplies images and expected text only. Teacher attention derived from the training transcription supervises the patch scorer; inference uses only the image. There are no human bounding-box annotations. Hard selection itself does not differentiate through indices, so the scorer has an explicit attention-distillation loss.
 
-The proper 676 FIT / 144 DEV experiment selected joint epoch 4 and reached 115 raw, 126 numeric and 49/54 reviewed numeric on DEV, versus the paired full-token control 115/122/47. A prospective full 820 refit then used a fresh scorer for one epoch (26 updates) and joint training for four epochs (208 updates). Its terminal checkpoint was fixed before evaluating the separate 206 images. The former 144 DEV images are training data in this final refit.
+The proper 676 FIT /144 DEV experiment selected joint epoch4 with115/144 literal exact, versus 115/144 for its paired full-token control. A prospective full 820 refit then used a fresh scorer for one epoch/26updates and four joint epochs/208updates. Its terminal checkpoint was fixed before206 evaluation; the former144 DEV images were training data in that final refit.
 
-| Price reader | Parameters | Raw exact /206 | Numeric /206 | AI-reviewed numeric /144 | RGB / encoded ms | GPU MiB |
-|---|---:|---:|---:|---:|---:|---:|
-| Custom token selection | 17.914M | 159 | 186 | 132 | 1.422 /1.695 | 708 |
-| Recovered rank128, full2048 tokens | 17.864M | 159 | 182 | 130 | 1.622 /1.898 | 714 |
-| Full WATERec R2048 reference | 26.121M | 153 | 180 | 132 | 1.684 /1.990 | 716 |
-| Florence-2 reference | 231.414M | 148 | 176 | 133 | 5.359 /5.689 | 1178 |
+| Price reader | Parameters | Raw exact /206 | RGB / encoded ms | GPU MiB |
+| --- | ---: | ---: | ---: | ---: |
+| Custom token selection | 17.914M | 159 | 1.422 /1.695 | 708 |
+| Recovered rank128, full2048 tokens | 17.864M | 159 | 1.622 /1.898 | 714 |
+| Full WATERec R2048 reference | 26.121M | 153 | 1.684 /1.990 | 716 |
+| Florence-2 reference | 231.414M | 148 | 5.359 /5.689 | 1178 |
 
-The custom model preserves the recovered parent's raw accuracy and improves numeric results. It remains one AI-reviewed case below Florence and has not reached the approximately 1 ms target. These checkpoints have different training histories; the table is not a controlled parameter-count ablation. Numeric comparison retains the decimal value; raw exact also retains currency and punctuation. AI144 is an AI-assisted subset of206, not the internal DEV144 or certified human truth.
+The custom model preserves the recovered parent’s159/206 literal exact count, but has not reached approximately 1 ms. The full WATERec reference scores 153/206 and Florence 148/206 on the historical references. Checkpoints have different training histories; this is not a controlled parameter-count ablation or a guarantee on unfamiliar images.
 
 ## TensorRT evidence and limits
 
-Both encoder and decoder were rebuilt from the new weights. Batch1 RGB-to-text includes resize, normalization, packing, upload, selection, encoder, all cached greedy decoder steps and text decoding. Encoded-to-text additionally includes image decoding. Measurements use RTX5090, five warmups and three 206-image passes in fresh processes. All206 replay strings and all 1,236 timed strings match native output. Compilation, loading, detection and network are excluded.
+Both encoder and decoder were rebuilt from the new weights. Batch1 RGB-to-text includes resize, normalization, packing, upload, selection, encoder, all cached greedy decoder steps and text decoding. Encoded-to-text additionally includes image decoding. Measurements use RTX5090, five warmups and three 206-image passes in fresh processes. All 206 replay strings and all 1,236 timed strings match native output. Compilation, loading, detection and network are excluded.
 
 The original strict 0.05 intermediate/logit tolerance **failed on seven prefixes across three FIT cases** and remains recorded as a failure. A separate output-fidelity qualification preserved all 12 FIT strings and 68 active-through-EOS tokens; all 68 visited prefixes satisfied a sufficient native argmax-margin bound. This supports the measured text-output parity, not numerical, calibration, routing or universal equivalence. No weights, precision policy or checkpoint were selected using 206 results.
 
@@ -54,24 +54,24 @@ Head-only token selection lost DEV accuracy before joint recovery. Learned 2×2 
 
 [Machine-readable aggregates](../results/compact_research.json) contain checkpoint and evidence hashes without private images, labels or weights. See [experiment history](experiments.md) for full-model resolution alternatives and [capabilities](capabilities.md) for scenario limitations.
 
-An additional matched five-epoch training test moved selection from block 6 to block 4. Its selected internal DEV result was **111/144 raw, 123/144 numeric and 48/54 reviewed**, versus the freshly trained control **119/127/48** and prior source **115/126/49**. Both arms used identical proper-source initialization and 215 updates. It failed the prospective accuracy gate; it was not exported or tested on the final 206. Passing four initial training examples did not predict held-out accuracy.
+An additional matched five-epoch test moved selection from block6 to block4. Selected literal exact was111/144, versus 119/144 for its fresh control and115/144 for the prior source. Both arms used the same proper-source initialization and215 updates. The candidate lost exact matches, was not exported and was not tested on206. Passing four initial FIT examples did not predict development accuracy.
 
 ## Additional rejected experiments
 
-These follow-ups used the proper 676 FIT /144 DEV split, not the full-820 refit. Each training comparison had its own freshly trained control. Counts below are raw exact /numeric exact over 144 DEV images, followed by AI-reviewed numeric on the 54-image DEV subset; compare within a row, not across different recipes.
+These follow-ups used the proper 676 FIT /144 DEV split, not the full 820 refit. Each comparison had a fresh matched control. Counts below are literal whole-string exact over144 development images; compare within each row. Historical acceptance rules and selection ancestry may differ from today’s exact-only workflow.
 
 | Follow-up | Candidate DEV counts | Matched control | Outcome |
 |---|---:|---:|---|
-| Earlier selection, 20 scorer-only epochs then five joint epochs | 114 /123 /45 | 120 /130 /50 | Failed accuracy gate |
-| One decoder layer, five joint epochs | 116 /125 /47 | 118 /126 /48 | Failed accuracy gate |
-| One decoder layer, two decoder-only then three joint epochs | 112 /123 /47 | 118 /127 /50 | Failed accuracy gate |
-| Shifted spatial windows of 16×16 patches in the first four visual blocks | 112 /121 /48 | 116 /125 /48 | Failed accuracy gate |
+| Earlier selection, 20 scorer-only epochs then five joint epochs | 114/144 | 120/144 | Failed accuracy gate |
+| One decoder layer, five joint epochs | 116/144 | 118/144 | Failed accuracy gate |
+| One decoder layer, two decoder-only then three joint epochs | 112/144 | 118/144 | Failed accuracy gate |
+| Shifted spatial windows of 16×16 patches in the first four visual blocks | 112/144 | 116/144 | Failed accuracy gate |
 
 No candidate in this table proceeded to final-206 testing or TensorRT export. The one-layer candidate had 15,547,361 parameters; fewer parameters did not establish a usable accuracy/speed trade-off.
 
 A separate **275,524-parameter orientation classifier** used a frozen 202,080-parameter convolutional stem and a trained 73,444-parameter head. It is an auxiliary component, not a 275K-parameter OCR reader. After eight epochs, its selected DEV result was 567/576 correct quarter-turn classes, versus 576/576 for the encoder-based reference. These are four rotations of 144 images, not 576 independent images; both classifiers were selected on DEV.
 
-The paired diagnostic used the same proper-FIT OCR checkpoint for both correction methods. The small classifier preserved the reference pipeline's 115 /126 /49 counts at 0° and 90°, but reached only 113 /124 /48 at 180° and 114 /125 /49 at 270°. It lost no previously correct upright case, but failed both the orientation and whole-OCR accuracy gates. It was not exported, timed or tested on final206. The completed diagnostic artifact audit is `352ed21459a282b4f11c40c88a1be809b5e9e97ec998e0931e01e8f00560cc09`.
+The paired diagnostic used the same proper-FIT OCR checkpoint for both orientation correction methods. The small classifier preserved115/144 literal exact at0°/90°, but reached113/144 at180° and114/144 at270°. It lost no previously correct upright case but failed its original acceptance rules. It was not exported, timed or tested on206. The completed audit identifier is352ed21459a282b4f11c40c88a1be809b5e9e97ec998e0931e01e8f00560cc09.
 
 ## Same-weight runtime trials
 

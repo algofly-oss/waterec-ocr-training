@@ -6,23 +6,23 @@ We tested whether a compact OCR model could approach Florence-2's layout/general
 
 The strongest qualified WATERec operating points are RS/512 for plates and R/2048 for prices. They are separately trained models. They should not be described as a single universal checkpoint, the smallest model tested, or a demonstrated 1 ms solution for every task.
 
-The plate model scored 2,475/2,693 exact and 880/984 on reviewed unseen images. The price model scored 153/206 exact, 180/206 strict numeric and 132/144 on the clear AI-reviewed numeric subset. Florence's corresponding final price counts were 148/176/133. That supports a strong speed/accuracy tradeoff, not uniform superiority on every metric or country. PARSeq was stronger than WATERec on the particular US subset of the foreign-plate comparison.
+The historical plate model scored 2,475/2,693 exact and 880/984 on reviewed unseen images. The historical price model scored 153/206 literal exact, versus Florence’s 148/206. These separate checkpoints support measured tradeoffs, not uniform superiority on every country or layout. PARSeq was stronger on the particular US subset of the foreign-plate comparison.
 
 ## Price resolution: measured lower-budget alternatives
 
 All three rows are the full **26,121,312-parameter WATERec R price model**, with all 12 vision blocks and two autoregressive decoder layers. These are not the experimental 5.5M custom models. The same 206 price report crops were evaluated, but the checkpoints were independently trained with different epoch counts and training pools; this is **not a controlled resolution-only ablation**.
 
-| Price checkpoint / fit policy | Budget / actual H×W / valid tokens | Raw exact /206 | Numeric /206 | AI-readable numeric /144 | RGB / encoded mean ms | PID GPU MiB |
-|---|---|---:|---:|---:|---:|---:|
-| R512,820 FIT,fixed17 epochs | 512 /64×128 /512 | 149 | 176 | 129 | 0.822072 /1.069492 | 688 |
-| R1024,820 FIT,fixed6 epochs | 1024 /88×180 /990,padded1024 | 154 | 181 | 131 | 1.089788 /1.339671 | 700 |
-| R2048,676 FIT,selectedepoch20 | 2048 /128×256 /2048 | 153 | 180 | 132 | 1.683839 /1.990325 | 716 |
+| Price checkpoint / fit policy | Budget / actual H×W / valid tokens | Raw exact /206 | RGB / encoded mean ms | PID GPU MiB |
+| --- | --- | ---: | ---: | ---: |
+| R512,820 FIT,fixed17 epochs | 512 /64×128 /512 | 149 | 0.822072 /1.069492 | 688 |
+| R1024,820 FIT,fixed6 epochs | 1024 /88×180 /990,padded1024 | 154 | 1.089788 /1.339671 | 700 |
+| R2048,676 FIT,selectedepoch20 | 2048 /128×256 /2048 | 153 | 1.683839 /1.990325 | 716 |
 
-The listed geometry is H×W for the common 160×320 input crop. Native aspect-aware patch4 preprocessing can produce different shapes for other aspect ratios. R2048 selected on its original144-image internalDEV split; the other rows are fixed full820 refits. No checkpoint was selected by this new table. Thus the slightly higher R1024 supplied-label count is not proof that 1024 is intrinsically better than 2048, nor is the faster512 row equally accurate on every raised fraction.
+The listed geometry is H×W for the common 160×320 input crop. Native aspect-aware patch4 preprocessing can produce different shapes for other aspect ratios. R2048 selected on its original144-image internalDEV split; the other rows are fixed full 820 refits. No checkpoint was selected by this new table. Thus the slightly higher R1024 supplied-label count is not proof that 1024 is intrinsically better than 2048, nor is the faster512 row equally accurate on every raised fraction.
 
 These are actual RTX5090/staticB1 TensorRT measurements, five warmups and three passes over 206 images. PredecodedRGB→text includes exact GPU resize/normalization/packing, H2D, encoder, all cached-greedy AR steps and Unicode decoding. Encoded additionally includes CPU file/image decoding. Model loading, compilation, detector and network are excluded. The measured paths use **opt-in/research GPU-preprocessing adapters**; a public default CPU-preprocessing run or a newly exported engine must be benchmarked separately. Do not silently assign these timings to the portable notebook defaults. Native/TRT strings agree on all 206 for each checkpoint; this is checkpoint-specific empirical parity, not a universal precision theorem or batch32 qualification.
 
-Raw exact retains punctuation and currency; numeric is a separately declared whole-value comparison. The AI-readable144 is a subset of 206, not the internal 144 DEV or human-certified ground truth.149/206 raw or154/206 raw is not a universal 90% claim, even when a reviewed numeric percentage exceeds90%.
+Literal exact requires every case, symbol, space and sequence position to match. These historical checkpoints have different initialization, training pools and selection histories; their original selection policies are not retroactively described as the current exact-only policy. See the current corrected-reference table for the separate144-image development cohort.
 
 ### Host RAM is a separate measurement
 
@@ -32,7 +32,7 @@ R512/R1024 fresh-PID encoded-input functional probes record Linux `ru_maxrss` of
 
 ## What the difficult scenarios taught us
 
-- **Small fractions matter.** A model can read ordinary words and still discard price cents. Whole-string numeric accuracy is therefore reported alongside exact text and normalized edit similarity. No metric silently removes a decimal or extracts a convenient substring.
+- **Small fractions matter.** A model can read ordinary words and still discard price cents. Literal whole-string exact treats missing cents, altered currency or spacing as errors; no decimal is removed and no convenient substring is extracted.
 - **Layout is more than character recognition.** Two-line plates and price digits at different vertical positions test output ordering. WATERec retains 2D patch information and uses an autoregressive character reader; task-specific annotations teach the desired sequence without boxes.
 - **Unseen images require their own test.** Strong in-distribution accuracy does not establish different-country or capture-condition performance. Original public pretraining exposure is unknown; our duplicate checks do not prove global pretraining novelty.
 - **Rotation correction is a pipeline feature.** A separately trained orientation head substantially improved quarter-turn results but slightly harmed upright accuracy. Native and corrected pipelines, model versions and decoder choices must remain separate in tables.
@@ -49,13 +49,13 @@ The strong price reference fitted 676 images, selected on an internal 144-image 
 
 The portable training workflow preserves the model and image/text interface but uses configurable conservative batches and the vendored native attention path. It is not a byte-for-byte replay of the specialized batch-16 research harness. Users should record their data/split hashes, software, seeds, augmentation, precision, training policy and checkpoint selection. The dummy data reproduces the interface, not the private experiment.
 
-Some price annotations came from model-generated labels. We retained raw-label metrics and separately reviewed numeric subsets rather than pretending all labels were human-certified. The full-cohort and reviewed-subset denominators remain explicit.
+Some price annotations came from model-generated labels. Literal reference matches do not certify visual truth. Unresolved labels and cohort denominators remain explicit; no reviewed subset silently replaces the full evaluation pool.
 
 ## Unsuccessful and experimental routes
 
 Our small custom CCT/AR model (about 5.51M parameters) finished at 891/1,167 plate exact on an internal development split and 79/144 price exact with plain training. Response distillation increased the price result to 80/144, well below WATERec's 113/144 internal reference. These are different cohorts from the final tables above; the small model was not promoted as a replacement or given inherited TensorRT timings.
 
-Width-only expansion of an earlier small reader did not recover complex-price accuracy. Removing WATERec encoder layers also lost accuracy. An initial rank-128 MLP compression probe retained two generic training words but lost decimal fractions on two of four price training examples. Subsequent recovery training produced a qualified 17.86M reader; the initial probe is not its final accuracy. The original trained image-only token selector terminal reached 159/206 raw and 186/206 numeric on prices; restart2 later reached 161/187. See [the compact research update](compact_research.md) for architecture, training, measured resources and remaining failures. The compact architecture is now available through the separate experimental workflow in notebook 9, with reference weights unbundled; standard R/RS options are unchanged.
+Width-only expansion of an earlier small reader did not recover complex-price accuracy. Removing WATERec encoder layers also lost accuracy. An initial rank-128 MLP compression probe retained two generic training words but lost decimal fractions on two of four price training examples. Subsequent recovery training produced a qualified 17.86M reader; the initial probe is not its final accuracy. The original trained image-only token selector terminal reached 159/206 literal exact on prices; restart2 later reached 161/206. See [the compact research update](compact_research.md) for architecture, training, measured resources and remaining failures. The compact architecture is now available through the separate experimental workflow in notebook 9, with reference weights unbundled; standard R/RS options are unchanged.
 
 The experimental WATERec speculative decoder adds a 1,386,624-parameter draft to the unchanged OCR target. It is an optional faster-decoding mode, not a smaller WATERec architecture or PARSeq Fast Tiny. Draft/target checkpoint identities are bound together. Actual accuracy and numerical differences must be rechecked for each pair.
 
@@ -77,7 +77,7 @@ Related experiment repositories: [Florence-2](https://github.com/algofly-oss/vll
 
 ## Latest custom price operating point
 
-The fixed restart 2 research terminal reaches 161/206 raw (78.16%), 187/206 numeric (90.78%) and 132/144 AI-reviewed numeric, with 90.18% mean normalized Levenshtein similarity. Its newly qualified TensorRT path measures 1.362 ms RGB /1.620 ms encoded at 708 MiB on RTX 5090/static batch 1. This is a different checkpoint, not a lossless runtime update: 16 strings changed, including four formerly raw-correct cases lost. The older rows remain historical; see [the full scope and provenance](compact_research.md#latest-qualified-point-restart2). It is not a selectable R/RS model option, does not reach 90% raw exact, and remains one AI-reviewed numeric case below Florence.
+The fixed restart2 research terminal reaches 161/206 literal exact (78.16%). Its earlier qualified TensorRT path measures1.362 ms RGB /1.620 ms encoded at708 MiB on RTX5090/static B1. This is a different checkpoint, not a lossless runtime update:16 strings changed, including four formerly correct cases lost. Older rows remain historical; see [scope and provenance](compact_research.md#latest-qualified-point-restart2). It is separate from standard R/RS options and does not reach90% literal exact.
 
 ## Experimental workflow implementation
 

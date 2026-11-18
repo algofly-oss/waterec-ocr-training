@@ -34,8 +34,8 @@ An explicitly configured validation folder must exist when enabled. Otherwise a
 validation fraction in `[0, 1)` creates a deterministic text-grouped holdout if no
 validation folder is present. To train to a fixed terminal without validation,
 set `use_validation_folder: false` and `validation_fraction: 0`. Validation
-selection uses image-only decoding, raw exact then mean normalized Levenshtein
-similarity, retaining the earliest exact tie including epoch zero. Validation is
+selection uses image-only decoding and literal whole-string exact count only,
+retaining the earliest tied count including epoch zero. Validation is
 never used to construct teacher training targets.
 
 By default, the existing standard trainer fine-tunes official R/RS weights on a
@@ -183,8 +183,7 @@ are the explicit `--static-batch` profiles, using reused barrier allocations.
 | 4 | 3.537 | 4.518 | 1120.2 | 778 | 577.2 / 544.3 |
 | 8 | 5.497 | 7.247 | 1443.0 | 878 | 581.3 / 544.9 |
 
-All capacities reproduced the same 206 native outputs: **161/206 raw exact,
-187/206 numeric equivalent and 132/144 on the uncertified AI-reviewed subset**.
+All capacities reproduced the same 206 native outputs: **161/206 literal exact (78.16%)**.
 This repeatedly examined cohort is post-development evidence, not blind accuracy.
 
 Each scope used a fresh process, five warm batch calls and three complete passes
@@ -206,10 +205,7 @@ all 1,236 timed outputs. It measured **1.356083 ms RGB / 1.620985 ms encoded** a
 **708 MiB** sampled process GPU usage on RTX 5090/static B1, five warmups and three
 206-image passes per fresh process. Its input budget is 2048 (typically 128×256),
 with 512 selected tokens after six blocks and two AR layers. Accuracy remains
-**161/206 raw (78.16%), 187/206 numeric (90.78%), 132/144 AI-reviewed numeric**;
-mean normalized Levenshtein similarity is 90.18%, not 90% raw exact. AI144 is an
-uncertified AI-assisted subset of 206, not human ground truth. Florence's 133/144
-AI result remains one case higher.
+**161/206 literal exact (78.16%)**. Every symbol, space and sequence position matters. Historical training/selection ancestry differs from the current exact-only workflow; these results are not evidence that old runs used today’s policy.
 
 Current host RSS was 576.5 MiB in the RGB process and 545.3 MiB in the encoded process; libraries/metadata and the RGB cache are included. OS high-watermark fields are separate, not minimum RAM.
 
@@ -226,42 +222,18 @@ private/cache trials, not a clock-controlled causal speedup. See
 ## External price-photo limitation
 
 The same qualified checkpoint was also tested on an existing **eight-photo
-licensed external probe**. Native FP32 and TensorRT each recovered **2/8 primary
-amounts**, both under strict decimal precision and under numeric equivalence.
-Visible currency was correct on **0/6** references that contain currency. The
-combined amount-and-currency count is 1/8, but that sole match has no visible
-currency; it is not evidence of successful currency recognition.
-
+licensed external probe**. The frozen external-photo probe exposed difficult price and currency errors. Its older amount-parser scores are not literal full-string accuracy and are not reported here; the private evidence is preserved.
 Native and TensorRT raw strings agreed on **7/8**, with both differing outputs
 wrong by the frozen primary-price policy. The earlier **206/206 raw-string
 agreement remains a qualification of that specific cohort**, not a promise of
 backend identity on arbitrary photos. Read-only localization is tracked
 separately; no unique cause is claimed here.
 
-The unchanged PP-OCRv6 price engine also scored 2/8 amounts on these inputs; its
-native checkpoint result is not measured. Florence now also has a **separate,
-source-closed native rerun: 3/8 amounts and 0/6 visible currencies**. Its sole
-combined amount-and-currency match also has no visible currency. The exact
-previously missing helper was recovered from archived source snapshots. With the
-same base and decoder checkpoint, 384×384 processing, BF16 autocast, beam 5 and a
-32-token cap, the new run reproduced all eight historical output strings. All
-eight ended with EOS before the cap. There was no expected-score acceptance gate.
+A separate source-closed Florence native rerun reproduced all eight historical output strings with the same base/decoder checkpoint,384×384 processing, BF16 autocast, beam5 and a32-token cap. All ended with EOS before the cap. The previously missing helper was recovered from archived source. This does not retroactively certify the earlier environment, and no latency/memory claim is made.
 
-The older 3/8 record remains unchanged: recovering source and reproducing strings
-does not retroactively certify its original dependency environment. The fresh run
-has its own pinned current implementation, merged-weight proof and artifact
-audit. No latency or memory result is claimed for this rerun. These are eight
-independent source photos, all obtained as licensed published display derivatives. The old probe has influenced research,
-so this repeat is exploratory and post-development, **not a blind population
-benchmark**. Dual-currency and primary/secondary-price ambiguities remain under
-the predeclared policy. Some currency glyphs are unsupported; all eight photos
-remain in the denominator.
+These eight licensed source photos had already influenced research, so this is exploratory post-development evidence, not a blind population benchmark. Crops, references, weights, precision and output policy were unchanged; reference hashes were checked, but labels did not condition inference. This demonstrates the limits of the in-domain206 output agreement, not broad price-photo capability. Private historical scoring remains preserved; new public accuracy reporting requires literal complete strings.
 
-No crop, reference, checkpoint, precision or selection policy was changed for
-this repeat. Labels were not parsed or used to condition inference; provenance
-checks did binary-hash the reference files. Strict amount scoring preserves zeros
-and decimal precision; numeric equivalence is separate, with no substring search
-or decimal insertion. The result is negative evidence for broad price-photo
-capability despite the stronger in-domain 206 results. Aggregate metrics and the
-completed artifact-audit hash are in
-[the workflow record](../results/public_compact_workflow.json).
+
+## Exact-replay limits
+
+Notebook9 runs the portable multistage compact WATE software on your image/text data. Its budget64 dummy configuration is not the historical2048→512 recipe, and this17.9M family is not the newer1.687M multiscale reader. The source release bundles neither measured weights nor private benchmark data. Current corrected-policy PP, photometric tiny-reader and reference-training experiments are not implemented by this compact training command. Reproducing their exact steps still requires separately portable training adapters/configs, legitimate data with matching frozen splits/labels, the correct initial weights and launch/environment records. Dummy substitutions can establish software behavior, not the reported accuracy. No complete public-assets fresh replay of all research experiments has been demonstrated.

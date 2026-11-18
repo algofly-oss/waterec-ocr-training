@@ -6,6 +6,44 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 
 class CoreTests(unittest.TestCase):
+    def test_optional_plate_upscale_width_boundaries(self):
+        from waterec_ocr.waterec_orientation import OrientationRecognizer
+
+        reader = OrientationRecognizer.__new__(OrientationRecognizer)
+        for standard, tiny, expected in (
+            (False, False, set()),
+            (True, False, {48, 96}),
+            (False, True, {32, 47}),
+            (True, True, {32, 47, 48, 96}),
+        ):
+            reader.upscale_small_plates = standard
+            reader.upscale_very_small_plates = tiny
+            for width in (31, 32, 47, 48, 96, 97):
+                with Image.new("RGB", (width, 16)) as image:
+                    self.assertEqual(reader._should_upscale(image), width in expected)
+                pixels = np.zeros((16, width, 3), np.uint8)
+                self.assertEqual(reader._should_upscale(pixels), width in expected)
+
+    def test_rgb_arrays_preserve_patch_packing_and_rotation(self):
+        from waterec_ocr.waterec_orientation import _rotate
+        from waterec_ocr.waterec_preprocessing import pack_image
+
+        rgb = np.random.default_rng(7).integers(0, 256, (31, 77, 3), np.uint8)
+        image = Image.fromarray(rgb)
+        rope = {key: np.zeros((512, 16), np.float32) for key in ("cosine", "sine")}
+        for turns in range(4):
+            pil = _rotate(image, turns)
+            arr = _rotate(rgb, turns)
+            np.testing.assert_array_equal(arr, np.asarray(pil))
+            packed, grid = pack_image(pil, rope, 512)
+            packed_array, grid_array = pack_image(arr, rope, 512)
+            self.assertEqual(grid, grid_array)
+            for key in packed:
+                np.testing.assert_array_equal(packed[key], packed_array[key])
+        for bad in (rgb.astype(np.float32), rgb[:, :, 0], rgb[:0]):
+            with self.assertRaisesRegex(ValueError, "uint8 RGB array"):
+                pack_image(bad, rope, 512)
+
     def test_help_is_light_and_standalone(self):
         env=dict(os.environ,PYTHONPATH=str(ROOT),CUDA_VISIBLE_DEVICES='')
         with tempfile.TemporaryDirectory() as d:

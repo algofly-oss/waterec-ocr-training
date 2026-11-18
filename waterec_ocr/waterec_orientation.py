@@ -41,6 +41,8 @@ def create_head():
 
 
 def _rotate(image, quarterturns):
+    if isinstance(image, np.ndarray):
+        return np.rot90(image, -quarterturns)
     return (
         image
         if quarterturns == 0
@@ -272,8 +274,13 @@ class OrientationRecognizer:
         gpu_preprocess=False,
         speculative_deployment=None,
         speculative_shared_workspace=True,
+        upscale_small_plates=False,
+        upscale_very_small_plates=False,
     ):
         from .waterec_runtime import TensorRTRecognizer
+
+        self.upscale_small_plates = upscale_small_plates
+        self.upscale_very_small_plates = upscale_very_small_plates
 
         if gpu_preprocess:
             from .waterec_gpu_preprocessing import GpuInputRecognizer
@@ -313,16 +320,37 @@ class OrientationRecognizer:
 
             self._logits = cuda.pagelocked_empty((1, 4), np.float32)
 
+    def _should_upscale(self, image):
+        width = image.shape[1] if isinstance(image, np.ndarray) and image.ndim == 3 else (
+            0 if isinstance(image, np.ndarray) else image.width
+        )
+        return (self.upscale_small_plates and 48 <= width <= 96) or (
+            self.upscale_very_small_plates and 32 <= width <= 47
+        )
+
+    def _encode_upright(self, image):
+        if not self._should_upscale(image):
+            return self.runtime.encode(image)
+        if isinstance(image, np.ndarray):
+            if image.dtype != np.uint8 or image.shape[2] != 3 or image.shape[0] == 0:
+                raise ValueError("Expected a nonempty H×W×3 uint8 RGB array")
+            with Image.fromarray(image) as rgb:
+                return self._encode_upright(rgb)
+        with image.resize((2 * image.width, 2 * image.height), Image.Resampling.LANCZOS) as larger:
+            return self.runtime.encode(larger)
+
     def infer(self, images):
+        """Recognize PIL images or H×W×3 uint8 arrays in RGB channel order."""
         from .waterec_runtime import cuda
 
         result = []
         self.last_angles = []
         for image in images:
-            image = image.convert("RGB")
-            prepared = self.runtime.encode(image)
+            if not isinstance(image, np.ndarray) and image.mode != "RGB":
+                image = image.convert("RGB")
             angle = 0
             if self.enabled:
+                prepared = self.runtime.encode(image)
                 name = self.runtime.meta["orientation"]["logits_output"]
                 cuda.memcpy_dtoh_async(
                     self._logits,
@@ -332,7 +360,16 @@ class OrientationRecognizer:
                 self.runtime.stream.synchronize()
                 angle = int(self._logits.argmax())
                 if angle:
-                    prepared = self.runtime.encode(_rotate(image, (-angle) % 4))
+                    upright = _rotate(image, (-angle) % 4)
+                    try:
+                        prepared = self._encode_upright(upright)
+                    finally:
+                        if isinstance(upright, Image.Image):
+                            upright.close()
+                elif self._should_upscale(image):
+                    prepared = self._encode_upright(image)
+            else:
+                prepared = self._encode_upright(image)
             result.append(self.runtime.decode_encoded(prepared))
             self.last_angles.append(angle * 90)
         return result

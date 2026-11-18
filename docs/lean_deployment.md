@@ -49,3 +49,17 @@ Check `waterec-ocr infer --help` for backend, speculative and GPU-preprocessing
 options. The inference CLI loads only the selected backend; selecting native or
 ONNX inference requires the corresponding extras. Evaluation and benchmarking
 with the TensorRT backend also remain Torch-free.
+
+## Pass decoded RGB crops
+
+The TensorRT Python API accepts Pillow images and NumPy arrays. For a decoded
+crop, pass a nonempty `H×W×3` array with dtype `uint8` in RGB channel order.
+One call can consume an iterable of crops. The plate runtime processes them
+sequentially. The example in [notebook 8](../notebooks/8_optional_acceleration.ipynb)
+uses the speculative TensorRT deployment with GPU preprocessing.
+
+On 984 reviewed upright crops, the RGB-array API averaged 0.981 ms per crop at
+700 MiB peak GPU memory on an RTX 5090 at batch one. It preserved all 984 strings,
+including 879 exact reference matches. This timing starts from decoded RGB in
+memory. Enabling orientation correction averaged 1.761 ms over four orientations
+of the same crops and preserved all 3,936 baseline strings and angle decisions.

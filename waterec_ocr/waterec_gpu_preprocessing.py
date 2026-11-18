@@ -17,6 +17,7 @@ import tempfile
 import numpy as np
 import pycuda.driver as cuda
 from pycuda.compiler import compile as cuda_compile
+from .waterec_preprocessing import rgb_array_size
 from .waterec_runtime import TensorRTRecognizer, rt, check, _owned_context
 
 ASSETS = Path(__file__).parent / "_native" / "waterec"
@@ -222,7 +223,7 @@ class _Geometry:
         self.cache_hits = self.cache_misses = 0
 
     def dimensions(self, image):
-        w, h = image.size
+        w, h = rgb_array_size(image) if isinstance(image, np.ndarray) else image.size
         area = w * h
         if area > self.max_tokens * 16:
             scale = math.sqrt(self.max_tokens * 16 / area)
@@ -274,7 +275,7 @@ class GpuInputRecognizer(TensorRTRecognizer):
     def encode(self, image):
         if self._closed:
             raise RuntimeError("Recognizer has been closed")
-        if image.mode != "RGB":
+        if not isinstance(image, np.ndarray) and image.mode != "RGB":
             image = image.convert("RGB")
         w, h = self.geometry.dimensions(image)
         ph, pw = h // 4, w // 4

@@ -36,20 +36,25 @@ def deployment_metadata(config, orientation=False):
 
 
 def make_recognizer(config, backend, checkpoint=None):
+    orientation = config.get("orientation", False)
+    upscale = config.get("upscale_small_plates", False)
+    upscale_tiny = config.get("upscale_very_small_plates", False)
+    if (upscale or upscale_tiny) and (backend != "tensorrt" or config.get("task") != "plate"):
+        raise ValueError("Plate upscaling requires a TensorRT plate configuration")
     if config.get("speculative", False) and backend != "tensorrt":
         raise ValueError("--speculative requires --backend tensorrt")
     if config.get("gpu_preprocess", False) and backend != "tensorrt":
         raise ValueError("--gpu-preprocess requires --backend tensorrt")
-    if config.get("orientation", False):
+    if orientation or upscale or upscale_tiny:
         if backend != "tensorrt":
             raise ValueError("--orientation currently requires --backend tensorrt")
-        folder, metadata = deployment_metadata(config, orientation=True)
+        folder, metadata = deployment_metadata(config, orientation=orientation)
         verify_requested_checkpoint(metadata, checkpoint)
         from .waterec_orientation import OrientationRecognizer
 
         return OrientationRecognizer(
             folder,
-            enabled=True,
+            enabled=orientation,
             gpu_preprocess=config.get("gpu_preprocess", False),
             speculative_deployment=speculative_directory(config)
             if config.get("speculative", False)
@@ -57,6 +62,8 @@ def make_recognizer(config, backend, checkpoint=None):
             speculative_shared_workspace=config.get(
                 "speculative_shared_workspace", True
             ),
+            upscale_small_plates=upscale,
+            upscale_very_small_plates=upscale_tiny,
         )
     if backend == "tensorrt":
         folder, metadata = deployment_metadata(config)
@@ -152,6 +159,16 @@ def main():
         help="Explicitly enable the separately built orientation pipeline",
     )
     parser.add_argument(
+        "--upscale-small-plates",
+        action="store_true",
+        help="Double 48–96 px wide upright plate crops, after orientation correction if enabled",
+    )
+    parser.add_argument(
+        "--upscale-very-small-plates",
+        action="store_true",
+        help="Experimentally double 32–47 px wide upright plate crops with Lanczos",
+    )
+    parser.add_argument(
         "--fit-manifest",
         type=Path,
         help="JSON list of training-only image records with path fields",
@@ -175,9 +192,13 @@ def main():
     parser.add_argument("--draft-checkpoint", type=Path)
     parser.add_argument("--speculative-dir", type=Path)
     args = parser.parse_args()
+    if (args.upscale_small_plates or args.upscale_very_small_plates) and args.command not in ("infer", "evaluate", "benchmark"):
+        parser.error("Plate upscaling applies only to infer, evaluate and benchmark")
     config = load_config(args.config)
     if args.command in ("infer", "evaluate", "benchmark"):
         config["orientation"] = args.orientation
+        config["upscale_small_plates"] = args.upscale_small_plates
+        config["upscale_very_small_plates"] = args.upscale_very_small_plates
         config["gpu_preprocess"] = args.gpu_preprocess
         config["speculative"] = args.speculative
         config["speculative_shared_workspace"] = not args.no_shared_workspace
